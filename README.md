@@ -13,3 +13,6 @@ edX Enrolment Data from 2012-2013
 
 World Bank Population Data
 (http://data.worldbank.org/indicator/SP.POP.TOTL)
+
+###D3.js Resources
+* Parallel Coordinates: http://syntagmatic.github.io/parallel-coordinates/
