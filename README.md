@@ -2,9 +2,8 @@
 Exploring the predictors of success in MITx & Harvardx MOOCs: [Project Link](http://clebeuf.github.io/MOOCs-InfoVis/)   
 
 ###Reports and Presentations:
-[Project Proposal Presentation](https://docs.google.com/presentation/d/1t6CxHb_9LPSXszPvpevPvpQYSgzg_WmRwl28jA1XsnI/edit?usp=sharing)
-
-[Project Proposal Report](https://docs.google.com/document/d/1QbfvcqlEY1ZNWBDN7t5vvYySChNt82JZ8VLoaAt4GjA/edit#)
+* [Project Proposal Presentation](https://docs.google.com/presentation/d/1t6CxHb_9LPSXszPvpevPvpQYSgzg_WmRwl28jA1XsnI/edit?usp=sharing)
+* [Project Proposal Report](https://docs.google.com/document/d/1QbfvcqlEY1ZNWBDN7t5vvYySChNt82JZ8VLoaAt4GjA/edit#)
 
 ###Datasets Used:
 
