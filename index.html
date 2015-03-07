@@ -23,6 +23,10 @@
 	</div>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
+
+	<script src="http://d3js.org/topojson.v1.min.js"></script>
+	<script src="js/datamaps.world.min.js"></script>
+
 	<div id="example" class="parcoords" style="width:360px;height:150px"></div>
 
 	<script>
@@ -40,5 +44,15 @@
 			.ticks(3)
 			.createAxes();
 	</script>
+
+	<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
+
+
+     <script>
+       //basic map config with custom fills, mercator projection
+		var basic = new Datamap({
+			element: document.getElementById("basic")
+		});
+     </script>
 </body>
 </html>
