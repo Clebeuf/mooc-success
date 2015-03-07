@@ -6,20 +6,38 @@
 	<link rel="stylesheet" type="text/css" href="css/base.css">
 	<!-- Style sheet for D3 -->
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.css">
 	<title>MOOCs Success InfoVis</title>
 </head>
 
 <body>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
 
 	<div class="container">
 		<h1>Visualizing MOOCs Success</h1>
+		<br>
 
-		<!-- Where the D3 Visualizations go -->
-		<section id="chart">
-			<!-- D3 Code goes here -->
-		</section>
+		<!-- Parallel Coordinates - move formatting into CSS file -->
+		<div id="example" class="parcoords" style="max-width:80%;height:200px"></div>
+
+			<script>
+
+				var data = [
+					[0,-0,0,0,0,3 ],
+					[1,-1,1,2,1,6 ],
+					[2,-2,4,4,0.5,2],
+					[3,-3,9,6,0.33,4],
+					[4,-4,16,8,0.25,9]
+				];
+
+				var pc = d3.parcoords()('#example')
+					.data(data)
+					.render()
+					.ticks(3)
+					.createAxes();
+			</script>
 
 	</div>
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </body>
 </html>
