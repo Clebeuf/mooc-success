@@ -36,6 +36,12 @@ def filterRecords(records):
         if 'other' in str.lower(record['final_cc_cname_DI']):
             record['final_cc_cname_DI'] = 'unknown'
         
+        courseInfo = re.split('[/]',record['course_id'])
+        record['school'] = courseInfo[0]
+        record['course_id'] = courseInfo[1]
+        record['year'] = courseInfo[2]
+
+
         record['viewed'] = int(record['viewed'])
         record['explored'] = int(record['explored'])
         record['certified'] = int(record['certified'])
