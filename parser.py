@@ -2,89 +2,55 @@
 import sys
 import re
 import string
+import json
+
+#----------------------------------------------------------------------------------------------
+# Create an array of variables for each record
+#----------------------------------------------------------------------------------------------
+def formatRecords(records):
+    formattedRecords = []
+
+    lables = records[0]
+
+    for record in records[1:]:
+
+        d = {}
+
+        for x in range(0, len(record)-1):
+            d[lables[x]] = record[x]
+
+        formattedRecords.append(d)
+
+    return formattedRecords
 
 
 #----------------------------------------------------------------------------------------------
-# createList(afinnfile)
-#   -creates a dictionary of words
+# Create an array of variables for each record
+# course_id,userid_DI,viewed,explored,certified,final_cc_cname_DI,LoE_DI,YoB,gender,grade,nevents,ndays_act,nplay_video,nchapters,nforum_posts,incomplete_flag
 #----------------------------------------------------------------------------------------------
-def createList(file):
-    terms = [] # initialize an empty dictionary
-    #creates a dictionary of words and their sentiment values
-    for line in file:
+def filterRecords(records):
+    filteredRecords = []
+
+    for record in records:
+
+        if 'other' in str.lower(record['final_cc_cname_DI']):
+            record['final_cc_cname_DI'] = 'unknown'
         
-        line = re.sub(r"\n", "", line)           #remove the newline characters
+        record['viewed'] = int(record['viewed'])
+        record['explored'] = int(record['explored'])
+        record['certified'] = int(record['certified'])
+        # record['YoB'] = int(record['YoB'])
+        # record['grade'] = float(record['grade'])*100
+        # record['nevents'] = int(record['nevents'])
+        # record['ndays_act'] = int(record['ndays_act'])
+        # record['nplay_video'] = int(record['nplay_video'])
+        # record['nchapters'] = int(record['nchapters'])
+        # record['nforum_posts'] = int(record['nforum_posts'])
 
-        terms.append(line.upper())
-    
-    #returns the dictionary
-    return terms
-
-
-
-#----------------------------------------------------------------------------------------------
-# findEnglishTweets(fp)
-#   -parses the tweet file and extracts english tweets
-#   -returns a dictionary of english tweets
-#----------------------------------------------------------------------------------------------
-def divideTweets(tweet_file, male, female):
-    tweets = []
-    male_tweets = [] # initialize an empty list
-    female_tweets = [] # initialize an empty list
-    numM = 0
-    numF = 0
-    
-    
-    for line in tweet_file:
-        temp = line[:]
-        if not '\"lang\":\"en\"' in temp:
-            #print 'not english:'
-            pass
-        if '\"lang\":\"en\"' in temp:
-            matchobj = re.match(r'(.*)\",\"text\":\"(.*)\",\"source\"', temp)
-            if matchobj:
-                #print matchobj.group(2)     #prints the tweets
-                if (matchobj.group(2)).startswith('\\u'):               # the way I dealt with the strange \u8908 tweets
-                    pass
-                else:
-                    s = matchobj.group(2)
-                    
-                    #format the tweets - ie. remove irrelavant information
-                    s = re.sub(r"http:(\S)*", "", s)    #remove the http://...
-                    s = re.sub(r"&\S\S\;", "", s)    #remove the &xx 
-                    s = re.sub(r"&\S\S\S\;", "", s)    #remove the &xxx
-                    s = re.sub(r"\\u\S\S\S\S", "", s)   #remove the unicode characters
-                    s = re.sub(r"\\n", "", s)           #remove the newline characters
-                    s = re.sub(r"\\S", "", s)          #remove the \characters
-                    s = re.sub(r"\'", "", s)          #remove the \characters
-                    s = re.sub(r"\-", "", s)          #remove the \characters
-                    
-                    
-                    
-                    words = re.split('[^a-zA-Z\-]',s)
-                    words = [value.upper() for value in words if value != '']   # remove the empty words
-                    
-                    fflag = 0
-                    mflag = 0
-                    
-                    for word in words:
-                        if word in male:
-                            mflag = 1
-                        if word in female:
-                            fflag = 1
-            
-                    if fflag == 1 and mflag == 0:
-                        female_tweets.append(words)
-                        numF = numF +1
-                    elif fflag == 0 and mflag == 1:
-                        male_tweets.append(words)
-                        numM = numM +1
-
-    return male_tweets, female_tweets
+        filteredRecords.append(record)
 
 
-
-
+    return filteredRecords
 
 #----------------------------------------------------------------------------------------------
 # Create an array of variables for each record
@@ -95,18 +61,19 @@ def createArray(rawData):
     for line in rawData:
         temp = line[:]
 
-        #remove the newline characters
-        temp = re.sub(r"\r\n", "", temp)
+        # split records by \r
+        records = re.split('\r',temp)
 
-        # Split into variables
-        words = re.split('[,]',temp)
+        for record in records:     
 
-        # Remove New Line
-        newData.append(words[:])
+            # Split into variables
+            record = re.split('[,]',record)
 
-    print newData
+            # Remove invalid records
+            if (record[len(record)-1]) != "1":
+                newData.append(record)
+
     return newData
-
 
 
 #----------------------------------------------------------------------------------------------
@@ -114,8 +81,14 @@ def createArray(rawData):
 #----------------------------------------------------------------------------------------------
 def main():
     rawData = open(sys.argv[1])
-    fTweets = createArray(rawData)
+    
+    records = createArray(rawData)
+    
+    formattedRecords = formatRecords(records)
+    
+    print filterRecords(formattedRecords)
 
+    # print json.dumps(formattedRecords)
 
 
 
