@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Style sheet for entire page -->
+	<link rel="stylesheet" type="text/css" href="css/base.css">
+	<!-- Style sheet for D3 -->
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.css">
+	<title>MOOCs Success InfoVis</title>
+</head>
+
+<body>
+
+	<div class="container">
+		<h1>Visualizing MOOCs Success</h1>
+
+		<!-- Where the D3 Visualizations go -->
+		<section id="chart">
+			<!-- D3 Code goes here -->
+		</section>
+
+	</div>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
+
+	<script src="http://d3js.org/topojson.v1.min.js"></script>
+	<script src="js/datamaps.world.min.js"></script>
+
+	<div id="example" class="parcoords" style="width:360px;height:150px"></div>
+
+	<script>
+		var data = [
+			[0,-0,0,0,0,3 ],
+			[1,-1,1,2,1,6 ],
+			[2,-2,4,4,0.5,2],
+			[3,-3,9,6,0.33,4],
+			[4,-4,16,8,0.25,9]
+		];
+
+		var pc = d3.parcoords()('#example')
+			.data(data)
+			.render()
+			.ticks(3)
+			.createAxes();
+	</script>
+
+	<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
+
+
+     <script>
+       //basic map config with custom fills, mercator projection
+		var basic = new Datamap({
+			element: document.getElementById("basic")
+		});
+     </script>
+</body>
+</html>
