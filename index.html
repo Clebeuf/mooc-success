@@ -27,22 +27,23 @@
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
 	<script src="js/datamaps.world.min.js"></script>
 
-	<div id="example" class="parcoords" style="width:360px;height:150px"></div>
+	<div id="example" class="parcoords" style="width:1400px;height:400px"></div>
 
 	<script>
-		var data = [
-			[0,-0,0,0,0,3 ],
-			[1,-1,1,2,1,6 ],
-			[2,-2,4,4,0.5,2],
-			[3,-3,9,6,0.33,4],
-			[4,-4,16,8,0.25,9]
-		];
+		d3.json("data/output100.json", function(data) {
+			var pc = d3.parcoords()('#example')
+				.data(data)
+				.hideAxis(["final_cc_cname_DI"])
+				.hideAxis(["userid_DI"])
+				.hideAxis(["school"])
+				.hideAxis(["course_id"])
+				.hideAxis(["viewed"])
+				.hideAxis(["year"])
 
-		var pc = d3.parcoords()('#example')
-			.data(data)
-			.render()
-			.ticks(3)
-			.createAxes();
+				.render()
+				.ticks(3)
+				.createAxes();
+		});
 	</script>
 
 	<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
