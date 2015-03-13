@@ -1,3 +1,4 @@
-*.csv
 *.json
+*.csv
 /js/*.js
+/js/libs/*.js
