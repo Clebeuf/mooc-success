@@ -30,7 +30,7 @@
 	<div id="example" class="parcoords" style="width:1400px;height:400px"></div>
 
 	<script>
-		d3.json("data/output.json", function(data) {
+		d3.json("data/output100.json", function(data) {
 			var pc = d3.parcoords()('#example')
 				.data(data)
 				.hideAxis(["final_cc_cname_DI"])
@@ -39,10 +39,28 @@
 				.hideAxis(["course_id"])
 				.hideAxis(["year"])
 				.hideAxis(["YoB"])
+				.hideAxis(["gender"])
 
 				.render()
 				.ticks(3)
-				.createAxes();
+				.createAxes()()
+				.interactive();
+
+			// var explore_count = 0;
+			// var exploring = {};
+			// var explore_start = false;
+
+			// pc.svg
+			// 	.selectAll("dimension")
+			// 	.style("cursor", "pointer")
+			// 	.on("clicK", function(d) {
+			// 		exploring[d] = d in exploring ? false : true;
+			// 		event.preventDefault();
+			// 		if (exploring[d]) {
+			// 			d3.timer(explore(d, explore_count));
+			// 		}
+			// 	});
+			//
 		});
 	</script>
 
