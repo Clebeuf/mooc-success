@@ -34,6 +34,7 @@
 			var pc = d3.parcoords({
 				dimensionTitles: {
 					nplay_video: "video plays",
+					final_cc_cname_DI: "country",
 					LoE_DI: "level of education",
 					nevents: "# of events",
 					nforum_posts: "# of forums posts",
@@ -42,18 +43,20 @@
 				}
 			})('#example')
 				.data(data)
-				.hideAxis(["final_cc_cname_DI"])
-				.hideAxis(["userid_DI"])
-				.hideAxis(["school"])
-				.hideAxis(["course_id"])
-				.hideAxis(["year"])
-				.hideAxis(["YoB"])
-				.hideAxis(["gender"])
-				.hideAxis(["viewed"])
+				// .hideAxis(["final_cc_cname_DI"])
+				// .hideAxis(["userid_DI"])
+				// .hideAxis(["school"])
+				// .hideAxis(["course_id"])
+				// .hideAxis(["year"])
+				// .hideAxis(["YoB"])
+				// .hideAxis(["gender"])
+				// .hideAxis(["viewed"])
+				// .hideAxis(["explored"])
 
 				.ticks(3)
 				.mode("queue")
 				.render()
+				.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
 				.createAxes()
 				.brushMode("1D-axes")
 				.interactive()
