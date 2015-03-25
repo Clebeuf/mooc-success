@@ -45,23 +45,8 @@
 				.ticks(3)
 				.createAxes()
 				.brushMode("1D-axes")
-				.interactive();
-
-			// var explore_count = 0;
-			// var exploring = {};
-			// var explore_start = false;
-
-			// pc.svg
-			// 	.selectAll("dimension")
-			// 	.style("cursor", "pointer")
-			// 	.on("clicK", function(d) {
-			// 		exploring[d] = d in exploring ? false : true;
-			// 		event.preventDefault();
-			// 		if (exploring[d]) {
-			// 			d3.timer(explore(d, explore_count));
-			// 		}
-			// 	});
-			//
+				.interactive()
+				.reorderable();
 		});
 	</script>
 
