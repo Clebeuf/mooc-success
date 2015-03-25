@@ -30,8 +30,17 @@
 	<div id="example" class="parcoords" style="width:1400px;height:400px"></div>
 
 	<script>
-		d3.json("data/output100.json", function(data) {
-			var pc = d3.parcoords()('#example')
+		d3.json("data/output.json", function(data) {
+			var pc = d3.parcoords({
+				dimensionTitles: {
+					nplay_video: "video plays",
+					LoE_DI: "level of education",
+					nevents: "# of events",
+					nforum_posts: "# of forums posts",
+					nchapters: "# of chapters",
+					ndays_act: "# days active"
+				}
+			})('#example')
 				.data(data)
 				.hideAxis(["final_cc_cname_DI"])
 				.hideAxis(["userid_DI"])
@@ -40,9 +49,11 @@
 				.hideAxis(["year"])
 				.hideAxis(["YoB"])
 				.hideAxis(["gender"])
+				.hideAxis(["viewed"])
 
-				.render()
 				.ticks(3)
+				.mode("queue")
+				.render()
 				.createAxes()
 				.brushMode("1D-axes")
 				.interactive()
