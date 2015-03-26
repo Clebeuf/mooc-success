@@ -101,6 +101,25 @@ def createArray(rawData):
 
 
 #----------------------------------------------------------------------------------------------
+# Divide on explored
+#----------------------------------------------------------------------------------------------
+def exploredFilter(records):
+
+    explored = []
+
+    x = 0
+
+    for record in records:
+        if record['explored'] == 0:
+            pass
+            # temp = json.dumps(record)
+            # temp = temp + ","
+        else:
+            explored.append(record)
+
+    return explored
+
+#----------------------------------------------------------------------------------------------
 # main
 #----------------------------------------------------------------------------------------------
 def main():
@@ -112,7 +131,9 @@ def main():
     
     filteredRecords = filterRecords(formattedRecords)
     
-    print json.dumps(filteredRecords)
+    explored = exploredFilter(filteredRecords)
+
+    print json.dumps(explored)
 
 
 if __name__ == '__main__':

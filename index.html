@@ -20,78 +20,85 @@
 			<!-- D3 Code goes here -->
 		</section>
 
-	</div>
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-	<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
 
-	<script src="http://d3js.org/topojson.v1.min.js"></script>
-	<script src="js/datamaps.world.min.js"></script>
+		<script src="http://d3js.org/topojson.v1.min.js"></script>
+		<script src="js/datamaps.world.min.js"></script>
 
-	<input id="remember" type="checkbox" onclick="validate()"/> Explored MOOC
+		<form>
+			<br><input type="radio" value='' name="rate" id="explored" onclick="validate()" checked> Explored
+			<br><input type="radio" value='' name="rate" id="not_explored" onclick="validate()"> Not Explored
+		</form>
+		<div id="example" class="parcoords" style="width:1000px;height:400px"></div>
 
-	<div id="example" class="parcoords" style="width:1000px;height:400px"></div>
+		<script>
 
-	<script>
+			var pc = d3.parcoords({
+					dimensionTitles: {
+						nplay_video: "video plays",
+						final_cc_cname_DI: "country",
+						LoE_DI: "level of education",
+						nevents: "# of events",
+						nforum_posts: "# of forums posts",
+						nchapters: "# of chapters",
+						ndays_act: "# days active"
+					}
+				})('#example')
+			var datasetA
+			var datasetB
 
-		var pc = d3.parcoords()('#example');
-		var datasetA
-		var datasetB
+			function validate() {
 
-		function validate() {
-		        if (document.getElementById('remember').checked) {
-		            console.log("checked")
-		            console.log(pc);
-					d3.json("data/output-swap.json", function(data) {
-						pc.data(data)
-							.hideAxis(["final_cc_cname_DI"])
-							.hideAxis(["userid_DI"])
-							.hideAxis(["school"])
-							.hideAxis(["course_id"])
-							.hideAxis(["year"])
-							.hideAxis(["YoB"])
-							.hideAxis(["gender"])
+			        if (document.getElementById('explored').checked) {
+						d3.json("data/explored.json", function(data) {
+								var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
+								var color = function(d) { return colorgen(d.certified); };
 
-							.render()
-							.ticks(3)
-							.createAxes()
-							.brushMode("1D-axes")
-							.interactive()
-							.reorderable();
-					});
+								pc.data(data)
 
-		        } else {
-		        	console.log("unchecked")
-		        	
-		        	d3.json("data/output100.json", function(data) {
-						pc.data(data)
-						.hideAxis(["final_cc_cname_DI"])
-						.hideAxis(["userid_DI"])
-						.hideAxis(["school"])
-						.hideAxis(["course_id"])
-						.hideAxis(["year"])
-						.hideAxis(["YoB"])
-						.hideAxis(["gender"])
+								.ticks(4)
+								.mode("queue")
+								.color(color)
+								.composite("darker")
+								.alpha(0.15)
+								.render()
+								.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
+								.createAxes()
+								.brushMode("1D-axes")
+								.interactive()
+								.reorderable();
+						});
 
-						.render()
-						.ticks(3)
-						.createAxes()
-						.brushMode("1D-axes")
-						.interactive()
-						.reorderable();
-				});
-		        }
-		}
+			        } else if (document.getElementById('not_explored').checked) {
+						d3.json("data/output100.json", function(data) {
+								pc.data(data)
 
-	</script>
+								.ticks(4)
+								.mode("queue")
+								.alpha(0.15)
+								.render()
+								.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
+								.createAxes()
+								.brushMode("1D-axes")
+								.interactive()
+								.reorderable();
+						});
+			        }
+			}
 
-	<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
+		</script>
+
+		<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
 
 
-     <script>
-       //basic map config with custom fills, mercator projection
-		var basic = new Datamap({
-			element: document.getElementById("basic")
-		});
-     </script>
+	     <script>
+	       //basic map config with custom fills, mercator projection
+			var basic = new Datamap({
+				element: document.getElementById("basic")
+			});
+	     </script>
+
+ 	</div>
 </body>
 </html>
