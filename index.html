@@ -27,22 +27,41 @@
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
 	<script src="js/datamaps.world.min.js"></script>
 
-	<div id="example" class="parcoords" style="width:360px;height:150px"></div>
+	<div id="example" class="parcoords" style="width:1400px;height:400px"></div>
 
 	<script>
-		var data = [
-			[0,-0,0,0,0,3 ],
-			[1,-1,1,2,1,6 ],
-			[2,-2,4,4,0.5,2],
-			[3,-3,9,6,0.33,4],
-			[4,-4,16,8,0.25,9]
-		];
+		d3.json("data/output.json", function(data) {
+			var pc = d3.parcoords({
+				dimensionTitles: {
+					nplay_video: "video plays",
+					final_cc_cname_DI: "country",
+					LoE_DI: "level of education",
+					nevents: "# of events",
+					nforum_posts: "# of forums posts",
+					nchapters: "# of chapters",
+					ndays_act: "# days active"
+				}
+			})('#example')
+				.data(data)
+				// .hideAxis(["final_cc_cname_DI"])
+				// .hideAxis(["userid_DI"])
+				// .hideAxis(["school"])
+				// .hideAxis(["course_id"])
+				// .hideAxis(["year"])
+				// .hideAxis(["YoB"])
+				// .hideAxis(["gender"])
+				// .hideAxis(["viewed"])
+				// .hideAxis(["explored"])
 
-		var pc = d3.parcoords()('#example')
-			.data(data)
-			.render()
-			.ticks(3)
-			.createAxes();
+				.ticks(3)
+				.mode("queue")
+				.render()
+				.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
+				.createAxes()
+				.brushMode("1D-axes")
+				.interactive()
+				.reorderable();
+		});
 	</script>
 
 	<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
