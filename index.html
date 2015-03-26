@@ -10,7 +10,7 @@
 	<title>MOOCs Success InfoVis</title>
 </head>
 
-<body>
+<body onload="validate()">
 
 	<div class="container">
 		<h1>Visualizing MOOCs Success</h1>
@@ -27,27 +27,61 @@
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
 	<script src="js/datamaps.world.min.js"></script>
 
-	<div id="example" class="parcoords" style="width:1400px;height:400px"></div>
+	<input id="remember" type="checkbox" onclick="validate()"/> Explored MOOC
+
+	<div id="example" class="parcoords" style="width:1000px;height:400px"></div>
 
 	<script>
-		d3.json("data/output100.json", function(data) {
-			var pc = d3.parcoords()('#example')
-				.data(data)
-				.hideAxis(["final_cc_cname_DI"])
-				.hideAxis(["userid_DI"])
-				.hideAxis(["school"])
-				.hideAxis(["course_id"])
-				.hideAxis(["year"])
-				.hideAxis(["YoB"])
-				.hideAxis(["gender"])
 
-				.render()
-				.ticks(3)
-				.createAxes()
-				.brushMode("1D-axes")
-				.interactive()
-				.reorderable();
-		});
+		var pc = d3.parcoords()('#example');
+		var datasetA
+		var datasetB
+
+		function validate() {
+		        if (document.getElementById('remember').checked) {
+		            console.log("checked")
+		            console.log(pc);
+					d3.json("data/output-swap.json", function(data) {
+						pc.data(data)
+							.hideAxis(["final_cc_cname_DI"])
+							.hideAxis(["userid_DI"])
+							.hideAxis(["school"])
+							.hideAxis(["course_id"])
+							.hideAxis(["year"])
+							.hideAxis(["YoB"])
+							.hideAxis(["gender"])
+
+							.render()
+							.ticks(3)
+							.createAxes()
+							.brushMode("1D-axes")
+							.interactive()
+							.reorderable();
+					});
+
+		        } else {
+		        	console.log("unchecked")
+		        	
+		        	d3.json("data/output100.json", function(data) {
+						pc.data(data)
+						.hideAxis(["final_cc_cname_DI"])
+						.hideAxis(["userid_DI"])
+						.hideAxis(["school"])
+						.hideAxis(["course_id"])
+						.hideAxis(["year"])
+						.hideAxis(["YoB"])
+						.hideAxis(["gender"])
+
+						.render()
+						.ticks(3)
+						.createAxes()
+						.brushMode("1D-axes")
+						.interactive()
+						.reorderable();
+				});
+		        }
+		}
+
 	</script>
 
 	<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
