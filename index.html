@@ -6,11 +6,12 @@
 	<link rel="stylesheet" type="text/css" href="css/base.css">
 	<!-- Style sheet for D3 -->
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.css">
 	<title>MOOCs Success InfoVis</title>
 </head>
 
-<body onload="validate()">
+<body>
 
 	<div class="container">
 		<h1>Visualizing MOOCs Success</h1>
@@ -30,9 +31,48 @@
 			<br><input type="radio" value='' name="rate" id="explored" onclick="validate()" checked> Explored
 			<br><input type="radio" value='' name="rate" id="not_explored" onclick="validate()"> Not Explored
 		</form>
+
+		<form id="frm1" onchange="myFunction()">
+			  First name: <input type="text" name="fname" value="Donald"><br>
+			  Last name: <input type="text" name="lname" value="Duck"><br><br>
+			<select>
+			  <option value="explored">Volvo</option>
+			  <option value="not_explored">Saab</option>
+			</select>
+		</form>
+
 		<div id="example" class="parcoords" style="width:1000px;height:400px"></div>
 
 		<script>
+
+			// load the json data from a file
+			var json = (function() {
+		        var json = null;
+		        $.ajax({
+		            'async': false,
+		            'global': false,
+		            'url': "/data/explored.json",
+		            'dataType': "json",
+		            'success': function (data) {
+		                json = data;
+		            }
+		        });
+		        return json;
+		    })();
+
+		    var filtered=$(json).filter(function(i,n){return n.final_cc_cname_DI==='Canada'});
+		    console.log(filtered)
+
+			function myFunction() {
+			    var x = document.getElementById("frm1");
+			    var text = "";
+			    var i;
+			    for (i = 0; i < x.length ;i++) {
+			        text += x.elements[i].value + "<br>";
+			    }
+			    // document.getElementById("demo").innerHTML = text;
+			    console.log(text);
+			}
 
 			var pc = d3.parcoords({
 					dimensionTitles: {
@@ -45,47 +85,17 @@
 						ndays_act: "# days active"
 					}
 				})('#example')
-			var datasetA
-			var datasetB
 
-			function validate() {
-
-			        if (document.getElementById('explored').checked) {
-						d3.json("data/explored.json", function(data) {
-								var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
-								var color = function(d) { return colorgen(d.certified); };
-
-								pc.data(data)
-
-								.ticks(4)
-								.mode("queue")
-								.color(color)
-								.composite("darker")
-								.alpha(0.15)
-								.render()
-								.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
-								.createAxes()
-								.brushMode("1D-axes")
-								.interactive()
-								.reorderable();
-						});
-
-			        } else if (document.getElementById('not_explored').checked) {
-						d3.json("data/output100.json", function(data) {
-								pc.data(data)
-
-								.ticks(4)
-								.mode("queue")
-								.alpha(0.15)
-								.render()
-								.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
-								.createAxes()
-								.brushMode("1D-axes")
-								.interactive()
-								.reorderable();
-						});
-			        }
-			}
+						pc.data(filtered)
+						.ticks(4)
+						.mode("queue")
+						.alpha(0.15)
+						.render()
+						.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
+						.createAxes()
+						.brushMode("1D-axes")
+						.interactive()
+						.reorderable();
 
 		</script>
 
