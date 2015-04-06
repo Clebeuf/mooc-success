@@ -2,192 +2,111 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-
-	<!-- JQuery script -->
-	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-
+	<!-- Style sheet for entire page -->
+	<link rel="stylesheet" type="text/css" href="css/base.css">
 	<!-- Style sheet for D3 -->
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-	
-	<!-- BOOTSTRAP SCRIPTS-->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
 	<link rel="stylesheet" type="text/css" href="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.css">
 	<title>MOOCs Success InfoVis</title>
 </head>
 
-<body onload="loadCoordinates()">
-
-	<!-- SCRIPTS -->
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-	<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
-	<script src="http://d3js.org/topojson.v1.min.js"></script>
-	<script src="js/datamaps.world.min.js"></script>
+<body onload="validate()">
 
 	<div class="container">
+		<h1>Visualizing MOOCs Success</h1>
 
-		<div class="row">
-			<div class="col-md-12">
-				<h1>Visualizing MOOCs Success</h1>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">
-				<div class="form-group">
-					<h4>Filters:</h4>
-					<form id="frm1" onchange="filterData()">
-						Type of Data:
-						<select id="explored">
-						  <option value="1">Explored</option>
-						  <option value="0">Not Explored</option>
-						</select>
-						  <div class="checkbox">
-						  	Years:
-						      <br><label><input type="checkbox" id="2012" checked> 2012</label>
-						      <br><label><input type="checkbox" id="2013"> 2013</label>
-						    
-						  </div>
-					</form>
-				</div>
-			</div>
-			<div class="col-md-10">
+		<!-- Where the D3 Visualizations go -->
+		<section id="chart">
+			<!-- D3 Code goes here -->
+		</section>
 
-				<div id="example" class="parcoords" style="width:100%;height:400px"></div>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
 
-				<script>
+		<script src="http://d3js.org/topojson.v1.min.js"></script>
+		<script src="js/datamaps.world.min.js"></script>
 
-					// CREATE THE PARALLEL COORDINATES
-					var pc = d3.parcoords({
-						dimensionTitles: {
-							nplay_video: "video plays",
-							final_cc_cname_DI: "country",
-							LoE_DI: "education level",
-							nevents: "# of events",
-							nforum_posts: "# of forums posts",
-							nchapters: "# of chapters",
-							ndays_act: "# days active"
-						}
-					})('#example')
+		<form>
+			<br><input type="radio" value='' name="rate" id="explored" onclick="validate()" checked> Explored
+			<br><input type="radio" value='' name="rate" id="not_explored" onclick="validate()"> Not Explored
+		</form>
+		<div id="example" class="parcoords" style="width:1000px;height:400px"></div>
 
-					var filtered = null;
+		<script>
 
-					// load the json data from a file
-					var json = (function() {
-				        var json = null;
-				        $.ajax({
-				            'async': false,
-				            'global': false,
-				            'url': "/data/output.json",
-				            'dataType': "json",
-				            'success': function (data) {
-				                json = data;
-				            }
-				        });
-				        return json;
-				    })();
-
-				    // filter the json data based on the filters selected
-				    function filterData(){
-						var e = document.getElementById("explored");
-						var strUser = e.options[e.selectedIndex].value;
-
-						var exploredValue = parseInt(strUser);
-
-						filtered=$(json).filter(
-					    	function(i,n){
-
-					    		if(exploredValue === 1){
-					    			if(document.getElementById("2012").checked == true && document.getElementById("2013").checked == true){
-					    				// console.log("2012");
-					    				return (n.explored===1 && (n.year==2012 || n.year == 2013));
-					    				console.log(n)
-					    			}else if(document.getElementById("2012").checked == true){
-					    				// console.log("2012");
-					    				return (n.explored===1 && n.year==2012);
-					    				console.log(n)
-					    			}else if(document.getElementById("2013").checked){
-					    				// console.log("2013");
-					    				return (n.explored===1 && n.year==2013)
-					    			};
-					    			
-					    		}else{
-					    			if(document.getElementById("2012").checked == true){
-					    				return (n.explored===0 && n.year==2012);
-					    			};
-					    			if(document.getElementById("2013").checked){
-					    				return (n.explored===0 && n.year==2013)
-					    			};
-					    		}
-					    	}
-					    );
-					    // console.log(filtered);
-						refreshCoordinates(filtered);
-					    return filtered;
+			var pc = d3.parcoords({
+					dimensionTitles: {
+						nplay_video: "video plays",
+						final_cc_cname_DI: "country",
+						LoE_DI: "level of education",
+						nevents: "# of events",
+						nforum_posts: "# of forums posts",
+						nchapters: "# of chapters",
+						ndays_act: "# days active"
 					}
+				})('#example')
+			var datasetA
+			var datasetB
+			var currentBrushed;
 
-					// refresh the coordinates for the new filters
-					function loadCoordinates(){
-						// create coloured tuples
-						var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
-						var color = function(d) { return colorgen(d.certified); };
+			function validate() {
 
-						// generate the parallel-coordinates
-						d3.json("data/output.json", function(data) {
+		        if (document.getElementById('explored').checked) {
+					d3.json("data/output.json", function(data) {
+							var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
+							var color = function(d) { return colorgen(d.certified); };
+
 							pc.data(data)
+
 							.ticks(4)
 							.mode("queue")
 							.color(color)
 							.composite("darker")
 							.alpha(0.15)
 							.render()
-							.dimensions(['LoE_DI','ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
+							.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
 							.createAxes()
 							.brushMode("1D-axes")
 							.interactive()
 							.reorderable();
-						});
-					}
 
-					// refresh the coordinates for the new filters
-					function refreshCoordinates(data){
 
-						// generate the parallel-coordinates
-						pc.data(data)
-						.render()
-						.updateAxes();
-					}
-
-				</script>
-
-				<!-- function to call popovers -->
-				<script type="text/javascript">
-					$(document).ready(function(){
-					    $('[data-toggle="popover"]').popover();   
 					});
-				</script>
 
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">	
-				<h3>THE TEMPORAL CONTROL GOES HERE</h3>	
-				<div id="slider"></div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">		
-				<div id="basic" style="position: relative; width: 100%; height: 300px;"></div>
+		        } else if (document.getElementById('not_explored').checked) {
+					d3.json("data/output100.json", function(data) {
+							pc.data(data)
 
-			     <script>
-			       //basic map config with custom fills, mercator projection
-					var basic = new Datamap({
-						element: document.getElementById("basic")
+							.ticks(4)
+							.mode("queue")
+							.alpha(0.15)
+							.render()
+							.dimensions(['LoE_DI', 'ndays_act', 'nchapters', 'nplay_video', 'nevents', 'nforum_posts', 'grade', 'certified'])
+							.createAxes()
+							.brushMode("1D-axes")
+							.interactive()
+							.reorderable();
 					});
-			     </script>
-			</div>
-		 </div>
-	 </div>
+		        }
+			}
+
+			pc.on("brush", function(event) {
+				currentBrushed = pc.brushed();
+				console.log(currentBrushed);
+			});
+
+		</script>
+
+		<div id="basic" style="position: relative; width: 60%; height: 400px;"></div>
+
+
+	     <script>
+	       //basic map config with custom fills, mercator projection
+			var basic = new Datamap({
+				element: document.getElementById("basic")
+			});
+	     </script>
+
+ 	</div>
 </body>
 </html>
