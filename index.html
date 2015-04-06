@@ -18,7 +18,7 @@
 	<title>MOOCs Success InfoVis</title>
 </head>
 
-<body>
+<body onload="loadCoordinates()">
 
 	<!-- SCRIPTS -->
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -63,7 +63,7 @@
 						dimensionTitles: {
 							nplay_video: "video plays",
 							final_cc_cname_DI: "country",
-							LoE_DI: "level of education",
+							LoE_DI: "education level",
 							nevents: "# of events",
 							nforum_posts: "# of forums posts",
 							nchapters: "# of chapters",
@@ -71,6 +71,7 @@
 						}
 					})('#example')
 
+					var filtered = null;
 
 					// load the json data from a file
 					var json = (function() {
@@ -84,15 +85,11 @@
 				                json = data;
 				            }
 				        });
-				        				    	console.log("hit")
 				        return json;
 				    })();
 
-				    var filtered = filterData();
-
 				    // filter the json data based on the filters selected
 				    function filterData(){
-				    	console.log("hit")
 						var e = document.getElementById("explored");
 						var strUser = e.options[e.selectedIndex].value;
 
@@ -102,12 +99,16 @@
 					    	function(i,n){
 
 					    		if(exploredValue === 1){
-					    			if(document.getElementById("2012").checked == true){
-					    				console.log("2012");
+					    			if(document.getElementById("2012").checked == true && document.getElementById("2013").checked == true){
+					    				// console.log("2012");
+					    				return (n.explored===1 && (n.year==2012 || n.year == 2013));
+					    				console.log(n)
+					    			}else if(document.getElementById("2012").checked == true){
+					    				// console.log("2012");
 					    				return (n.explored===1 && n.year==2012);
-					    			};
-					    			if(document.getElementById("2013").checked){
-					    				console.log("2013");
+					    				console.log(n)
+					    			}else if(document.getElementById("2013").checked){
+					    				// console.log("2013");
 					    				return (n.explored===1 && n.year==2013)
 					    			};
 					    			
@@ -121,19 +122,20 @@
 					    		}
 					    	}
 					    );
-					    console.log(filtered);
+					    // console.log(filtered);
 						refreshCoordinates(filtered);
 					    return filtered;
 					}
 
 					// refresh the coordinates for the new filters
-					function refreshCoordinates(){
+					function loadCoordinates(){
 						// create coloured tuples
 						var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
 						var color = function(d) { return colorgen(d.certified); };
 
 						// generate the parallel-coordinates
-						pc.data(filtered)
+						d3.json("data/output.json", function(data) {
+							pc.data(data)
 							.ticks(4)
 							.mode("queue")
 							.color(color)
@@ -145,6 +147,16 @@
 							.brushMode("1D-axes")
 							.interactive()
 							.reorderable();
+						});
+					}
+
+					// refresh the coordinates for the new filters
+					function refreshCoordinates(data){
+
+						// generate the parallel-coordinates
+						pc.data(data)
+						.render()
+						.updateAxes();
 					}
 
 				</script>
