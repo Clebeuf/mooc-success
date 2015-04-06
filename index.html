@@ -37,7 +37,7 @@
 			<div class="col-md-2">
 				<div class="form-group">
 					<h4>Filters:</h4>
-					<form id="frm1" onchange="filterData()">
+					<form id="frm1" onchange="refreshCoordinates()">
 						Type of Data:
 						<select id="explored">
 						  <option value="1">Explored</option>
@@ -71,8 +71,6 @@
 						}
 					})('#example')
 
-					var filtered = null;
-
 					// load the json data from a file
 					var json = (function() {
 				        var json = null;
@@ -88,31 +86,21 @@
 				        return json;
 				    })();
 
-				    // filter the json data based on the filters selected
-				    function filterData(){
-						var e = document.getElementById("explored");
-						var strUser = e.options[e.selectedIndex].value;
+					function filterDataset(){
+							var e = document.getElementById("explored");
+							var strUser = e.options[e.selectedIndex].value;
+							var exploredValue = parseInt(strUser);
 
-						var exploredValue = parseInt(strUser);
-
-						filtered=$(json).filter(
-					    	function(i,n){
-
+							var dataFillered = json.filter(function (n) {
 					    		if(exploredValue === 1){
 					    			if(document.getElementById("2012").checked == true && document.getElementById("2013").checked == true){
-					    				// console.log("2012");
 					    				return (n.explored===1 && (n.year==2012 || n.year == 2013));
-					    				console.log(n)
 					    			}else if(document.getElementById("2012").checked == true){
-					    				// console.log("2012");
 					    				return (n.explored===1 && n.year==2012);
-					    				console.log(n)
 					    			}else if(document.getElementById("2013").checked){
-					    				// console.log("2013");
 					    				return (n.explored===1 && n.year==2013)
 					    			};
-					    			
-					    		}else{
+					    		} else {
 					    			if(document.getElementById("2012").checked == true){
 					    				return (n.explored===0 && n.year==2012);
 					    			};
@@ -120,21 +108,20 @@
 					    				return (n.explored===0 && n.year==2013)
 					    			};
 					    		}
-					    	}
-					    );
-					    // console.log(filtered);
-						refreshCoordinates(filtered);
-					    return filtered;
+							         
+							});
+
+						return dataFillered
 					}
 
-					// refresh the coordinates for the new filters
+					// load the coordinates from the file and set the options
 					function loadCoordinates(){
 						// create coloured tuples
 						var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
 						var color = function(d) { return colorgen(d.certified); };
 
 						// generate the parallel-coordinates
-						d3.json("data/output.json", function(data) {
+						d3.json("data/explored.json", function(data) {
 							pc.data(data)
 							.ticks(4)
 							.mode("queue")
@@ -150,13 +137,18 @@
 						});
 					}
 
-					// refresh the coordinates for the new filters
-					function refreshCoordinates(data){
 
-						// generate the parallel-coordinates
-						pc.data(data)
+					// refresh the coordinates for the new filters selected
+					function refreshCoordinates(){
+
+						// Filter the preloaded json
+						dataF = filterDataset();
+
+						// refresh the coordinates
+						pc.data(dataF)
 						.render()
 						.updateAxes();
+
 					}
 
 				</script>
