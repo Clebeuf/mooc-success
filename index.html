@@ -8,7 +8,7 @@
 
 	<!-- Style sheet for D3 -->
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-	
+
 	<!-- BOOTSTRAP SCRIPTS-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
@@ -47,8 +47,16 @@
 						  	Years:
 						      <br><label><input type="checkbox" id="2012" checked> 2012</label>
 						      <br><label><input type="checkbox" id="2013"> 2013</label>
-						    
 						  </div>
+					</form>
+
+					<form id="frm2">
+						<!-- <select id="dimensionMapped">
+							<option value="grade">Grade</option>
+							<option value="certified">Certified</option>
+						</select> -->
+						<br />
+						<button onclick="getBrushedData()">See on Map</button>
 					</form>
 				</div>
 			</div>
@@ -108,7 +116,7 @@
 					    				return (n.explored===0 && n.year==2013)
 					    			};
 					    		}
-							         
+
 							});
 
 						return dataFillered
@@ -151,25 +159,30 @@
 
 					}
 
+					function getBrushedData() {
+						// var data = pc.brushed();
+						console.log('..');
+					}
+
 				</script>
 
 				<!-- function to call popovers -->
 				<script type="text/javascript">
 					$(document).ready(function(){
-					    $('[data-toggle="popover"]').popover();   
+					    $('[data-toggle="popover"]').popover();
 					});
 				</script>
 
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12">	
-				<h3>THE TEMPORAL CONTROL GOES HERE</h3>	
+			<div class="col-md-12">
+				<h3>THE TEMPORAL CONTROL GOES HERE</h3>
 				<div id="slider"></div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12">		
+			<div class="col-md-12">
 				<div id="basic" style="position: relative; width: 100%; height: 300px;"></div>
 
 			     <script>
