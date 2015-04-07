@@ -177,44 +177,14 @@
 					}
 
 					function addToJsonMapData(student) {
-						var countryName;
-						switch (student.final_cc_cname_DI) {
-							case 'United States': {
-								countryName = 'USA';
-								break;
-							}
-							case 'Canada': {
-								countryName = 'CAN';
-								break;
-							}
-							case 'Brazil': {
+						var countryName = countryCodes[student.final_cc_cname_DI];
 
-								break;
+						if (!countryName) {
+							if (student.final_cc_cname_DI != 'unknown') {
+								console.log(student.final_cc_cname_DI);
 							}
-							case 'United Kingdom': {
-
-								break;
-							}
-							case 'France': {
-
-								break;
-							}
-							case 'Germany': {
-
-								break;
-							}
-							case 'Australia': {
-
-								break;
-							}
-							case 'India': {
-
-								break;
-							}
+							return;
 						}
-						//if doing certified
-						//count++
-						if (!countryName) return;
 						if (countryName in mapJson) {
 							jsonObj = mapJson[countryName];
 							if (student.certified) {
@@ -269,6 +239,60 @@
 						}
 						updateChoropleth(mapData);
 					}
+
+					var countryCodes = {};
+					//Americas
+					countryCodes['United States'] = 'USA';
+					countryCodes['Canada'] = 'CAN';
+					countryCodes['Mexico'] = 'MEX';
+					countryCodes['Colombia'] = 'COL';
+					countryCodes['Venezuela'] = 'VEN';
+					countryCodes['Ecuador'] = 'ECU';
+					countryCodes['Peru'] = 'PER';
+					countryCodes['Brazil'] = 'BRA';
+					countryCodes['Bolivia'] = 'BOL';
+					countryCodes['Argentina'] = 'ARG';
+					countryCodes['Chile'] = 'CHL';
+					//Europe
+					countryCodes['United Kingdom'] = 'GBR';
+					countryCodes['Ireland'] = 'IRL';
+					countryCodes['France'] = 'FRA';
+					countryCodes['Spain'] = 'ESP';
+					countryCodes['Portugal'] = 'PRT';
+					countryCodes['Italy'] = 'ITA';
+					countryCodes['Poland'] = 'POL';
+					countryCodes['Greece'] = 'GRC';
+					countryCodes['Germany'] = 'DEU';
+					countryCodes['Norway'] = 'NOR';
+					countryCodes['Sweden'] = 'SWE';
+					countryCodes['Finland'] = 'FIN';
+					countryCodes['Ukraine'] = 'UKR';
+					countryCodes['Russian Federation'] = 'RUS';
+					//Africa
+					countryCodes['Egypt'] = 'EGY';
+					countryCodes['Morocco'] = 'MAR';
+					countryCodes['Nigeria'] = 'NGA';
+					//Middle East
+					countryCodes['Turkey'] = 'TUR';
+					countryCodes['Iraq'] = 'IRQ';
+					countryCodes['Iran'] = 'IRN';
+					countryCodes['Saudi Arabia'] = 'SAU';
+					countryCodes['Afghanistan'] = 'AFG';
+					//Asia
+					countryCodes['Pakistan'] = 'PAK';
+					countryCodes['India'] = 'IND';
+					countryCodes['Bangladesh'] = 'BGD';
+					countryCodes['China'] = 'CHN';
+					countryCodes['Thailand'] = 'THA';
+					countryCodes['Cambodia'] = 'KHM';
+					countryCodes['Vietnam'] = 'VNM';
+					//korea?
+					countryCodes['Japan'] = 'JPN';
+					countryCodes['Malaysia'] = 'MYS';
+					countryCodes['Philippines'] = 'PHL';
+					countryCodes['Indonesia'] = 'IDN';
+					countryCodes['Australia'] = 'AUS';
+					countryCodes['New Zealand'] = 'NZL';
 
 				</script>
 
