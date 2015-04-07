@@ -51,13 +51,13 @@
 					</form>
 
 					<form id="frm2">
-						<!-- <select id="dimensionMapped">
+						<select id="dimensionMapped">
 							<option value="grade">Grade</option>
 							<option value="certified">Certified</option>
-						</select> -->
-						<br />
-						<button onclick="getBrushedData()">See on Map</button>
+						</select>
 					</form>
+					<br />
+					<button onclick="getBrushedData()">See on Map</button>
 				</div>
 			</div>
 			<div class="col-md-10">
@@ -159,9 +159,115 @@
 
 					}
 
+					var mapJson = {};
+
 					function getBrushedData() {
-						// var data = pc.brushed();
-						console.log('..');
+						mapJson = {};
+						mapJson = new Object;
+						var data;
+						if (pc.brushed()) {
+							data = pc.brushed();
+						} else {
+							data = json;
+						}
+						for (i = 0; i < data.length; i++) {
+							addToJsonMapData(data[i]);
+						}
+						changeJsonMap();
+					}
+
+					function addToJsonMapData(student) {
+						var countryName;
+						switch (student.final_cc_cname_DI) {
+							case 'United States': {
+								countryName = 'USA';
+								break;
+							}
+							case 'Canada': {
+								countryName = 'CAN';
+								break;
+							}
+							case 'Brazil': {
+
+								break;
+							}
+							case 'United Kingdom': {
+
+								break;
+							}
+							case 'France': {
+
+								break;
+							}
+							case 'Germany': {
+
+								break;
+							}
+							case 'Australia': {
+
+								break;
+							}
+							case 'India': {
+
+								break;
+							}
+						}
+						//if doing certified
+						//count++
+						if (!countryName) return;
+						if (countryName in mapJson) {
+							jsonObj = mapJson[countryName];
+							if (student.certified) {
+								jsonObj.certified = jsonObj.certified+1;
+							} else {
+								jsonObj.uncertified = jsonObj.uncertified+1;
+							}
+							mapJson[countryName] = jsonObj;
+						} else {
+							var newObj = {};
+							if (student.certified) {
+								newObj.certified = 1;
+								newObj.uncertified = 0;
+							} else {
+								newObj.certified = 0;
+								newObj.uncertified = 1;
+							}
+							mapJson[countryName] = newObj;
+						}
+					}
+
+					var mapData = {};
+					function changeJsonMap() {
+						for (var key in mapData) {
+							if (!(key in mapJson)) {
+								var newObj = {};
+								newObj.certifiedPercent = 0;
+								newObj.fillKey = 'defaultFill';
+								mapData[key] = newObj;
+							}
+						}
+						for (var key in mapJson) {
+							var data = mapJson[key];
+
+							var newObj = {};
+							var percentage = data.certified / (data.certified + data.uncertified);
+							newObj.certifiedPercent = percentage;
+							var fill;
+							if (percentage < 0.20) {
+								fill = 'verylow';
+							} else if (percentage >= 0.20 && percentage < 0.40) {
+								fill = 'low';
+							} else if (percentage >= 0.40 && percentage < 0.60) {
+								fill = 'medium';
+							} else if (percentage >= 0.60 && percentage < 0.80) {
+								fill = 'high';
+							} else {
+								fill = 'veryhigh';
+							}
+							newObj.fillKey = fill;
+							mapData[key] = newObj;
+						}
+						updateChoropleth(mapData);
 					}
 
 				</script>
@@ -183,13 +289,29 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<div id="basic" style="position: relative; width: 100%; height: 300px;"></div>
+				<div id="basic" style="position: relative; width: 100%; height: 500px;"></div>
 
 			     <script>
 			       //basic map config with custom fills, mercator projection
 					var basic = new Datamap({
-						element: document.getElementById("basic")
+						element: document.getElementById("basic"),
+						fills: {
+							defaultFill: "#ABDDA4",
+							verylow: "#87CEFA",
+							low: "#6495ED",
+							medium: "#4169E1",
+							high: "#0000FF",
+							veryhigh: "#0000CD"
+						},
+						data: {
+
+						}
 					});
+
+					function updateChoropleth(json) {
+						basic.updateChoropleth(json);
+						basic.legend();
+					}
 			     </script>
 			</div>
 		 </div>
