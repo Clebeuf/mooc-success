@@ -329,6 +329,24 @@
 						},
 						data: {
 
+						},
+						geographyConfig: {
+							popupTemplate: function(geo, data) {
+								if (data == null) {
+									return ['<div class="hoverinfo"><strong>',
+									 	geo.properties.name,
+										'</strong></div>'].join('');
+								}
+								else {
+									//if looking at certified
+									var percentage = data.certifiedPercent*100;
+									percentage = percentage.toPrecision(3);
+									return ['<div class="hoverinfo"><strong>',
+				                        'Students Certified in ' + geo.properties.name,
+				                        ': ' + percentage + '%',
+				                        '</strong></div>'].join('');
+								}
+							}
 						}
 					});
 
