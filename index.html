@@ -78,6 +78,7 @@
 							<option value="certified">Certified</option>
 							<option value="grade">Grade</option>
 							<option value="gender">Gender</option>
+							<option value="hdi">HDI</option>
 						</select>
 					</form>
 					<br />
@@ -202,7 +203,7 @@
 						var color = function(d) { return colorgen(d.certified); };
 
 						// generate the parallel-coordinates
-						d3.json("data/explored.json", function(data) {
+						d3.json("data/output.json", function(data) {
 							pc.data(data)
 							.ticks(4)
 							.mode("queue")
@@ -293,6 +294,7 @@
 								newObj.females = 1;
 								newObj.males = 0;
 							}
+							newObj.hdi = student.hdi;
 							mapJson[countryName] = newObj;
 						}
 					}
@@ -319,13 +321,14 @@
 							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
 							newObj.percentMale = data.males / newObj.totalPeople;
 							newObj.percentFemale = data.females / newObj.totalPeople;
+							// newObj.hdi = data.hdi;
 
 							var gradeAverage = newObj.gradeAverage;
 							var dimension = document.getElementById("dimensionMapped");
 							dimensionToMap = dimension.options[dimension.selectedIndex].value;
 
 							var percentMale = newObj.percentMale;
-
+							// var hdi = newObj.hdi;
 							var fill;
 							if (dimensionToMap === 'certified') {
 								if (percentage < 0.20) {
@@ -365,6 +368,19 @@
 									fill = 'mostlyMale';
 								}
 							}
+							// else if (dimensionToMap === 'hdi') {
+							// 	if (hdi < .2) {
+							// 		fill = 'certvlow';
+							// 	} else if (hdi >= .2 && hdi < .4) {
+							// 		fill = 'certlow';
+							// 	} else if (hdi >= .4 && hdi < .6) {
+							// 		fill = 'certmedium';
+							// 	} else if (hdi >= .6 && hdi < .80) {
+							// 		fill = 'certhigh';
+							// 	} else {
+							// 		fill = 'certvhigh';
+							// 	}
+							// }
 							newObj.fillKey = fill;
 							mapData[key] = newObj;
 						}
@@ -503,6 +519,8 @@
 					                        '<br /> have a m:f ratio of ' + malePercent + ':' + femalePercent, '<br />',
 											' out of ' + data.totalPeople + ' students', '<br />',
 					                        '</strong></div>'].join('');
+									} else if (dimensionToMap == 'hdi') {
+
 									}
 								}
 							}
