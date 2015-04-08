@@ -16,7 +16,6 @@
 
 	<link rel="stylesheet" type="text/css" href="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.css">
 	<title>MOOCs Success InfoVis</title>
-
 </head>
 
 <body onload="loadCoordinates()">
@@ -44,34 +43,12 @@
 						  <option value="1">Explored</option>
 						  <option value="0">Not Explored</option>
 						</select>
-						<div class="checkbox">
+						  <div class="checkbox">
 						  	Years:
 						      <br><label><input type="checkbox" id="2012" checked> 2012</label>
 						      <br><label><input type="checkbox" id="2013"> 2013</label>
-						</div>
+						  </div>
 					</form>
-					<form id="courseForm" onchange="refreshCoordinates()">
-						<div class="checkbox">
-						  	Harvard Courses:
-								<br><label><input type="checkbox" id="PH207x" checked> HealthStat</label>
-								<br><label><input type="checkbox" id="PH278x" checked> HealthEnv</label>
-								<br><label><input type="checkbox" id="CB22x" checked> HeroesX*</label>
-								<br><label><input type="checkbox" id="CS50x" checked> Intro to CS*</label>
-								<br><label><input type="checkbox" id="ER22x" checked> JusticeX*</label>
-							<br>MIT Courses:
-								<br><label><input type="checkbox" id="14.73x" checked> Poverty</label>
-								<br><label><input type="checkbox" id="2.01x" checked> Structures</label>
-								<br><label><input type="checkbox" id="3.091x" checked> SS Chem</label>
-								<br><label><input type="checkbox" id="6.002x" checked> Circuits</label>
-								<br><label><input type="checkbox" id="6.00x" checked> Intro to CS</label>
-								<br><label><input type="checkbox" id="7.00x" checked> Biology</label>
-								<br><label><input type="checkbox" id="8.02x" checked> Electricity</label>
-								<br><label><input type="checkbox" id="8.MReV" checked> MechRev</label>
-						</div>
-						<a onclick="javascript:checkAll(true);" href="javascript:void();">check all</a>
-						<a onclick="javascript:checkAll(false);" href="javascript:void();">uncheck all</a>
-					</form>
-					<br><br>
 
 					<form id="frm2">
 						<select id="dimensionMapped">
@@ -88,20 +65,6 @@
 				<div id="example" class="parcoords" style="width:100%;height:400px"></div>
 
 				<script>
-
-
-				function checkAll(checktoggle){
-				  var checkboxes = document.getElementsByTagName('input');
-				 
-				  for (var i=0; i<checkboxes.length; i++)  {
-				    if (checkboxes[i].type == 'checkbox')   {
-				    	if (["PH207x","PH278x","CB22x","CS50x","ER22x","14.73x","2.01x","3.091x","6.002x","6.00x","7.00x","8.02x","8.MReV"].indexOf(checkboxes[i].id) > -1){
-				    		 checkboxes[i].checked = checktoggle;
-				    	}
-				    }
-				  }
-				  refreshCoordinates();
-				}
 
 					// CREATE THE PARALLEL COORDINATES
 					var pc = d3.parcoords({
@@ -159,41 +122,6 @@
 						return dataFillered
 					}
 
-					function filterByCourse(data){
-						var dataFillered = json.filter(function (m) {
-							if (document.getElementById("CB22x").checked && m.course_id=="CB22x"){
-								return m.course_id=="CB22x";
-							}else if (document.getElementById("CS50x").checked && m.course_id=="CS50x"){
-								return m.course_id=="CS50x";
-							}else if (document.getElementById("ER22x").checked && m.course_id=="ER22x"){
-								return m.course_id=="ER22x";
-							}else if (document.getElementById("PH207x").checked && m.course_id=="PH207x"){
-								return m.course_id=="PH207x";
-							}else if (document.getElementById("PH278x").checked && m.course_id=="PH278x"){
-								return m.course_id=="PH278x";
-							}else if (document.getElementById("14.73x").checked && m.course_id=="14.73x"){
-								return m.course_id=="14.73x";
-							}else if (document.getElementById("2.01x").checked && m.course_id=="2.01x"){
-								return m.course_id=="2.01x";
-							}else if (document.getElementById("3.091x").checked && m.course_id=="3.091x"){
-								return m.course_id=="3.091x";
-							}else if (document.getElementById("6.002x").checked && m.course_id=="6.002x"){
-								return m.course_id=="6.002x";
-							}else if (document.getElementById("6.00x").checked && m.course_id=="6.00x"){
-								return m.course_id=="6.00x";
-							}else if (document.getElementById("7.00x").checked && m.course_id=="7.00x"){
-								return m.course_id=="7.00x";
-							}else if (document.getElementById("8.02x").checked && m.course_id=="8.02x"){
-								return m.course_id=="8.02x";
-							}else if (document.getElementById("8.MReV").checked && m.course_id=="8.MReV"){
-								return m.course_id=="8.MReV";
-							}
-						});
-
-						return dataFillered
-					}
-
-
 					// load the coordinates from the file and set the options
 					function loadCoordinates(){
 						// create coloured tuples
@@ -224,10 +152,8 @@
 						// Filter the preloaded json
 						dataF = filterDataset();
 
-						dataC = filterByCourse(dataF);
-
 						// refresh the coordinates
-						pc.data(dataC)
+						pc.data(dataF)
 						.render()
 						.updateAxes();
 
@@ -428,7 +354,6 @@
 						basic.updateChoropleth(json);
 						basic.legend();
 					}
-
 			     </script>
 			</div>
 		 </div>
