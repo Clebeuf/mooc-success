@@ -52,8 +52,8 @@
 
 					<form id="frm2">
 						<select id="dimensionMapped">
-							<option value="grade">Grade</option>
 							<option value="certified">Certified</option>
+							<option value="grade">Grade</option>
 						</select>
 					</form>
 					<br />
@@ -187,14 +187,17 @@
 						}
 						if (countryName in mapJson) {
 							jsonObj = mapJson[countryName];
+							jsonObj.totalStudents = jsonObj.totalStudents+1;
 							if (student.certified) {
 								jsonObj.certified = jsonObj.certified+1;
 							} else {
 								jsonObj.uncertified = jsonObj.uncertified+1;
 							}
+							jsonObj.gradeTotal = jsonObj.gradeTotal+student.grade;
 							mapJson[countryName] = jsonObj;
 						} else {
 							var newObj = {};
+							newObj.totalStudents = 1;
 							if (student.certified) {
 								newObj.certified = 1;
 								newObj.uncertified = 0;
@@ -202,11 +205,13 @@
 								newObj.certified = 0;
 								newObj.uncertified = 1;
 							}
+							newObj.gradeTotal = student.grade;
 							mapJson[countryName] = newObj;
 						}
 					}
 
 					var mapData = {};
+					var dimensionToMap;
 					function changeJsonMap() {
 						for (var key in mapData) {
 							if (!(key in mapJson)) {
@@ -220,7 +225,9 @@
 							var data = mapJson[key];
 
 							var newObj = {};
-							var percentage = data.certified / (data.certified + data.uncertified);
+							newObj.certified = data.certified;
+							newObj.totalPeople = data.certified + data.uncertified;
+							var percentage = newObj.certified / newObj.totalPeople;
 							newObj.certifiedPercent = percentage;
 							var fill;
 							if (percentage < 0.20) {
@@ -234,9 +241,12 @@
 							} else {
 								fill = 'veryhigh';
 							}
+							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
 							newObj.fillKey = fill;
 							mapData[key] = newObj;
 						}
+						var dimension = document.getElementById("dimensionMapped");
+						dimensionToMap = dimension.options[dimension.selectedIndex].value;;
 						updateChoropleth(mapData);
 					}
 
@@ -251,7 +261,7 @@
 					countryCodes['Peru'] = 'PER';
 					countryCodes['Brazil'] = 'BRA';
 					countryCodes['Bolivia'] = 'BOL';
-					countryCodes['Argentina'] = 'ARG';
+					// countryCodes['Argentina'] = 'ARG';
 					countryCodes['Chile'] = 'CHL';
 					//Europe
 					countryCodes['United Kingdom'] = 'GBR';
@@ -339,12 +349,20 @@
 								}
 								else {
 									//if looking at certified
-									var percentage = data.certifiedPercent*100;
-									percentage = percentage.toPrecision(3);
-									return ['<div class="hoverinfo"><strong>',
-				                        'Students Certified in ' + geo.properties.name,
-				                        ': ' + percentage + '%',
-				                        '</strong></div>'].join('');
+									if (dimensionToMap === 'grade') {
+										return ['<div class="hoverinfo"><strong>',
+					                        'Average Grade of Students <br /> in ' + geo.properties.name,
+					                        ': ' + data.gradeAverage.toPrecision(3) + '%', '<br />',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'certified') {
+										var percentage = data.certifiedPercent*100;
+										percentage = percentage.toPrecision(3);
+										return ['<div class="hoverinfo"><strong>',
+					                        'Students Certified in ' + geo.properties.name,
+					                        ': ' + percentage + '%', '<br />',
+											data.certified + ' out of ' + data.totalPeople + ' certified',
+					                        '</strong></div>'].join('');
+									}
 								}
 							}
 						}
@@ -354,6 +372,8 @@
 						basic.updateChoropleth(json);
 						basic.legend();
 					}
+
+					getBrushedData();
 			     </script>
 			</div>
 		 </div>
