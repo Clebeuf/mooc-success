@@ -160,7 +160,7 @@
 					}
 
 					function filterByCourse(data){
-						var dataFillered = json.filter(function (m) {
+						var dataFillered = data.filter(function (m) {
 							if (document.getElementById("CB22x").checked && m.course_id=="CB22x"){
 								return m.course_id=="CB22x";
 							}else if (document.getElementById("CS50x").checked && m.course_id=="CS50x"){
