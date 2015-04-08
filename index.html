@@ -8,7 +8,7 @@
 
 	<!-- Style sheet for D3 -->
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-	
+
 	<!-- BOOTSTRAP SCRIPTS-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
@@ -47,9 +47,17 @@
 						  	Years:
 						      <br><label><input type="checkbox" id="2012" checked> 2012</label>
 						      <br><label><input type="checkbox" id="2013"> 2013</label>
-						    
 						  </div>
 					</form>
+
+					<form id="frm2">
+						<select id="dimensionMapped">
+							<option value="grade">Grade</option>
+							<option value="certified">Certified</option>
+						</select>
+					</form>
+					<br />
+					<button onclick="getBrushedData()">See on Map</button>
 				</div>
 			</div>
 			<div class="col-md-10">
@@ -108,7 +116,7 @@
 					    				return (n.explored===0 && n.year==2013)
 					    			};
 					    		}
-							         
+
 							});
 
 						return dataFillered
@@ -151,32 +159,201 @@
 
 					}
 
+					var mapJson = {};
+
+					function getBrushedData() {
+						mapJson = {};
+						mapJson = new Object;
+						var data;
+						if (pc.brushed()) {
+							data = pc.brushed();
+						} else {
+							data = json;
+						}
+						for (i = 0; i < data.length; i++) {
+							addToJsonMapData(data[i]);
+						}
+						changeJsonMap();
+					}
+
+					function addToJsonMapData(student) {
+						var countryName = countryCodes[student.final_cc_cname_DI];
+
+						if (!countryName) {
+							if (student.final_cc_cname_DI != 'unknown') {
+								console.log(student.final_cc_cname_DI);
+							}
+							return;
+						}
+						if (countryName in mapJson) {
+							jsonObj = mapJson[countryName];
+							if (student.certified) {
+								jsonObj.certified = jsonObj.certified+1;
+							} else {
+								jsonObj.uncertified = jsonObj.uncertified+1;
+							}
+							mapJson[countryName] = jsonObj;
+						} else {
+							var newObj = {};
+							if (student.certified) {
+								newObj.certified = 1;
+								newObj.uncertified = 0;
+							} else {
+								newObj.certified = 0;
+								newObj.uncertified = 1;
+							}
+							mapJson[countryName] = newObj;
+						}
+					}
+
+					var mapData = {};
+					function changeJsonMap() {
+						for (var key in mapData) {
+							if (!(key in mapJson)) {
+								var newObj = {};
+								newObj.certifiedPercent = 0;
+								newObj.fillKey = 'defaultFill';
+								mapData[key] = newObj;
+							}
+						}
+						for (var key in mapJson) {
+							var data = mapJson[key];
+
+							var newObj = {};
+							var percentage = data.certified / (data.certified + data.uncertified);
+							newObj.certifiedPercent = percentage;
+							var fill;
+							if (percentage < 0.20) {
+								fill = 'verylow';
+							} else if (percentage >= 0.20 && percentage < 0.40) {
+								fill = 'low';
+							} else if (percentage >= 0.40 && percentage < 0.60) {
+								fill = 'medium';
+							} else if (percentage >= 0.60 && percentage < 0.80) {
+								fill = 'high';
+							} else {
+								fill = 'veryhigh';
+							}
+							newObj.fillKey = fill;
+							mapData[key] = newObj;
+						}
+						updateChoropleth(mapData);
+					}
+
+					var countryCodes = {};
+					//Americas
+					countryCodes['United States'] = 'USA';
+					countryCodes['Canada'] = 'CAN';
+					countryCodes['Mexico'] = 'MEX';
+					countryCodes['Colombia'] = 'COL';
+					countryCodes['Venezuela'] = 'VEN';
+					countryCodes['Ecuador'] = 'ECU';
+					countryCodes['Peru'] = 'PER';
+					countryCodes['Brazil'] = 'BRA';
+					countryCodes['Bolivia'] = 'BOL';
+					countryCodes['Argentina'] = 'ARG';
+					countryCodes['Chile'] = 'CHL';
+					//Europe
+					countryCodes['United Kingdom'] = 'GBR';
+					countryCodes['Ireland'] = 'IRL';
+					countryCodes['France'] = 'FRA';
+					countryCodes['Spain'] = 'ESP';
+					countryCodes['Portugal'] = 'PRT';
+					countryCodes['Italy'] = 'ITA';
+					countryCodes['Poland'] = 'POL';
+					countryCodes['Greece'] = 'GRC';
+					countryCodes['Germany'] = 'DEU';
+					countryCodes['Norway'] = 'NOR';
+					countryCodes['Sweden'] = 'SWE';
+					countryCodes['Finland'] = 'FIN';
+					countryCodes['Ukraine'] = 'UKR';
+					countryCodes['Russian Federation'] = 'RUS';
+					//Africa
+					countryCodes['Egypt'] = 'EGY';
+					countryCodes['Morocco'] = 'MAR';
+					countryCodes['Nigeria'] = 'NGA';
+					//Middle East
+					countryCodes['Turkey'] = 'TUR';
+					countryCodes['Iraq'] = 'IRQ';
+					countryCodes['Iran'] = 'IRN';
+					countryCodes['Saudi Arabia'] = 'SAU';
+					countryCodes['Afghanistan'] = 'AFG';
+					//Asia
+					countryCodes['Pakistan'] = 'PAK';
+					countryCodes['India'] = 'IND';
+					countryCodes['Bangladesh'] = 'BGD';
+					countryCodes['China'] = 'CHN';
+					countryCodes['Thailand'] = 'THA';
+					countryCodes['Cambodia'] = 'KHM';
+					countryCodes['Vietnam'] = 'VNM';
+					//korea?
+					countryCodes['Japan'] = 'JPN';
+					countryCodes['Malaysia'] = 'MYS';
+					countryCodes['Philippines'] = 'PHL';
+					countryCodes['Indonesia'] = 'IDN';
+					countryCodes['Australia'] = 'AUS';
+					countryCodes['New Zealand'] = 'NZL';
+
 				</script>
 
 				<!-- function to call popovers -->
 				<script type="text/javascript">
 					$(document).ready(function(){
-					    $('[data-toggle="popover"]').popover();   
+					    $('[data-toggle="popover"]').popover();
 					});
 				</script>
 
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12">	
-				<h3>THE TEMPORAL CONTROL GOES HERE</h3>	
+			<div class="col-md-12">
+				<h3>THE TEMPORAL CONTROL GOES HERE</h3>
 				<div id="slider"></div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12">		
-				<div id="basic" style="position: relative; width: 100%; height: 300px;"></div>
+			<div class="col-md-12">
+				<div id="basic" style="position: relative; width: 100%; height: 500px;"></div>
 
 			     <script>
 			       //basic map config with custom fills, mercator projection
 					var basic = new Datamap({
-						element: document.getElementById("basic")
+						element: document.getElementById("basic"),
+						fills: {
+							defaultFill: "#ABDDA4",
+							verylow: "#87CEFA",
+							low: "#6495ED",
+							medium: "#4169E1",
+							high: "#0000FF",
+							veryhigh: "#0000CD"
+						},
+						data: {
+
+						},
+						geographyConfig: {
+							popupTemplate: function(geo, data) {
+								if (data == null) {
+									return ['<div class="hoverinfo"><strong>',
+									 	geo.properties.name,
+										'</strong></div>'].join('');
+								}
+								else {
+									//if looking at certified
+									var percentage = data.certifiedPercent*100;
+									percentage = percentage.toPrecision(3);
+									return ['<div class="hoverinfo"><strong>',
+				                        'Students Certified in ' + geo.properties.name,
+				                        ': ' + percentage + '%',
+				                        '</strong></div>'].join('');
+								}
+							}
+						}
 					});
+
+					function updateChoropleth(json) {
+						basic.updateChoropleth(json);
+						basic.legend();
+					}
 			     </script>
 			</div>
 		 </div>
