@@ -316,27 +316,58 @@
 							newObj.totalPeople = data.certified + data.uncertified;
 							var percentage = newObj.certified / newObj.totalPeople;
 							newObj.certifiedPercent = percentage;
-							var fill;
-							//TODO: change the fillKey to reflect the dimension HERE
-							if (percentage < 0.20) {
-								fill = 'verylow';
-							} else if (percentage >= 0.20 && percentage < 0.40) {
-								fill = 'low';
-							} else if (percentage >= 0.40 && percentage < 0.60) {
-								fill = 'medium';
-							} else if (percentage >= 0.60 && percentage < 0.80) {
-								fill = 'high';
-							} else {
-								fill = 'veryhigh';
-							}
 							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
 							newObj.percentMale = data.males / newObj.totalPeople;
 							newObj.percentFemale = data.females / newObj.totalPeople;
+
+							var gradeAverage = newObj.gradeAverage;
+							var dimension = document.getElementById("dimensionMapped");
+							dimensionToMap = dimension.options[dimension.selectedIndex].value;
+
+							var percentMale = newObj.percentMale;
+
+							var fill;
+							if (dimensionToMap === 'certified') {
+								if (percentage < 0.20) {
+									// fill = 'certified_very_low';
+									fill = 'certvlow';
+								} else if (percentage >= 0.20 && percentage < 0.40) {
+									fill = 'certlow';
+								} else if (percentage >= 0.40 && percentage < 0.60) {
+									fill = 'certmedium';
+								} else if (percentage >= 0.60 && percentage < 0.80) {
+									fill = 'certhigh';
+								} else {
+									fill = 'certvhigh';
+								}
+							} else if (dimensionToMap === 'grade') {
+								if (gradeAverage < 20) {
+									fill = 'gradevlow';
+								} else if (gradeAverage >= 20 && gradeAverage < 40) {
+									fill = 'gradelow';
+								} else if (gradeAverage >= 40 && gradeAverage < 60) {
+									fill = 'grademedium';
+								} else if (gradeAverage >= 60 && gradeAverage < 80) {
+									fill = 'gradehigh';
+								} else {
+									fill = 'gradevhigh';
+								}
+							} else if (dimensionToMap === 'gender') {
+								if (percentMale < .30) {
+									fill = 'mostlyFemale';
+								} else if (percentMale >= .30 && percentMale < .45) {
+									fill = 'somewhatFemale';
+								} else if (percentMale >= .45 && percentMale < .55) {
+									fill = 'fiftyfifty';
+								} else if (percentMale >= .55 && percentMale < .70) {
+									fill = 'somewhatMale';
+								} else {
+									fill = 'mostlyMale';
+								}
+							}
 							newObj.fillKey = fill;
 							mapData[key] = newObj;
 						}
-						var dimension = document.getElementById("dimensionMapped");
-						dimensionToMap = dimension.options[dimension.selectedIndex].value;;
 						updateChoropleth(mapData);
 					}
 
@@ -351,7 +382,7 @@
 					countryCodes['Peru'] = 'PER';
 					countryCodes['Brazil'] = 'BRA';
 					countryCodes['Bolivia'] = 'BOL';
-					// countryCodes['Argentina'] = 'ARG';
+					countryCodes['Argentina'] = 'ARG';
 					countryCodes['Chile'] = 'CHL';
 					//Europe
 					countryCodes['United Kingdom'] = 'GBR';
@@ -421,11 +452,21 @@
 						element: document.getElementById("basic"),
 						fills: {
 							defaultFill: "#ABDDA4",
-							verylow: "#87CEFA",
-							low: "#6495ED",
-							medium: "#4169E1",
-							high: "#0000FF",
-							veryhigh: "#0000CD"
+							certvlow: "#87CEFA",
+							certlow: "#6495ED",
+							certmedium: "#4169E1",
+							certhigh: "#0000FF",
+							certvhigh: "#0000CD",
+							gradevlow: "#FFFF00",
+							gradelow: "#FFCC00",
+							grademedium: "#FF9900",
+							gradehigh: "#FF6600",
+							gradevhigh: "#FF3300",
+							mostlyMale: "#0B0B61",
+							somewhatMale: "#3104B4",
+							fiftyfifty: "#4000FF",
+							somewhatFemale: "#8000FF",
+							mostlyFemale: "#BF00FF"
 						},
 						data: {
 
@@ -439,12 +480,7 @@
 								}
 								else {
 									//if looking at certified
-									if (dimensionToMap === 'grade') {
-										return ['<div class="hoverinfo"><strong>',
-					                        'Average Grade of Students <br /> in ' + geo.properties.name,
-					                        ': ' + data.gradeAverage.toPrecision(3) + '%', '<br />',
-					                        '</strong></div>'].join('');
-									} else if (dimensionToMap === 'certified') {
+									if (dimensionToMap === 'certified') {
 										var percentage = data.certifiedPercent*100;
 										percentage = percentage.toPrecision(3);
 										return ['<div class="hoverinfo"><strong>',
@@ -452,11 +488,20 @@
 					                        ': ' + percentage + '%', '<br />',
 											data.certified + ' out of ' + data.totalPeople + ' certified',
 					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'grade') {
+										return ['<div class="hoverinfo"><strong>',
+					                        'Average Grade of Students <br /> in ' + geo.properties.name,
+					                        ': ' + data.gradeAverage.toPrecision(3) + '%', '<br />',
+					                        '</strong></div>'].join('');
 									} else if (dimensionToMap === 'gender') {
 										var malePercent = data.percentMale*100;
+										if (data.percentMale < 1 && data.percentMale > 0) malePercent = malePercent.toPrecision(2);
+										var femalePercent = data.percentFemale*100;
+										if (data.percentFemale < 1 && data.percentFemale > 0) femalePercent = femalePercent.toPrecision(2);
 										return ['<div class="hoverinfo"><strong>',
 					                        'Students in ' + geo.properties.name,
-					                        '<br /> are roughly ' + malePercent.toPrecision(3) + '% male', '<br />',
+					                        '<br /> have a m:f ratio of ' + malePercent + ':' + femalePercent, '<br />',
+											' out of ' + data.totalPeople + ' students', '<br />',
 					                        '</strong></div>'].join('');
 									}
 								}
@@ -466,7 +511,7 @@
 
 					function updateChoropleth(json) {
 						basic.updateChoropleth(json);
-						basic.legend();
+						// basic.legend();
 					}
 
 					getBrushedData();
