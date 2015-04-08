@@ -203,7 +203,7 @@
 						var color = function(d) { return colorgen(d.certified); };
 
 						// generate the parallel-coordinates
-						d3.json("data/output.json", function(data) {
+						d3.json("data/explored.json", function(data) {
 							pc.data(data)
 							.ticks(4)
 							.mode("queue")
