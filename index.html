@@ -77,6 +77,7 @@
 						<select id="dimensionMapped">
 							<option value="certified">Certified</option>
 							<option value="grade">Grade</option>
+							<option value="gender">Gender</option>
 						</select>
 					</form>
 					<br />
@@ -267,6 +268,11 @@
 							} else {
 								jsonObj.uncertified = jsonObj.uncertified+1;
 							}
+							if (student.gender == 'm') {
+								jsonObj.males = jsonObj.males+1;
+							} else if (student.gender == 'f') {
+								jsonObj.females = jsonObj.females+1;
+							}
 							jsonObj.gradeTotal = jsonObj.gradeTotal+student.grade;
 							mapJson[countryName] = jsonObj;
 						} else {
@@ -280,6 +286,13 @@
 								newObj.uncertified = 1;
 							}
 							newObj.gradeTotal = student.grade;
+							if (student.gender == 'm') {
+								newObj.males = 1;
+								newObj.females = 0;
+							} else if (student.gender == 'f') {
+								newObj.females = 1;
+								newObj.males = 0;
+							}
 							mapJson[countryName] = newObj;
 						}
 					}
@@ -304,6 +317,7 @@
 							var percentage = newObj.certified / newObj.totalPeople;
 							newObj.certifiedPercent = percentage;
 							var fill;
+							//TODO: change the fillKey to reflect the dimension HERE
 							if (percentage < 0.20) {
 								fill = 'verylow';
 							} else if (percentage >= 0.20 && percentage < 0.40) {
@@ -316,6 +330,8 @@
 								fill = 'veryhigh';
 							}
 							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
+							newObj.percentMale = data.males / newObj.totalPeople;
+							newObj.percentFemale = data.females / newObj.totalPeople;
 							newObj.fillKey = fill;
 							mapData[key] = newObj;
 						}
@@ -435,6 +451,12 @@
 					                        'Students Certified in ' + geo.properties.name,
 					                        ': ' + percentage + '%', '<br />',
 											data.certified + ' out of ' + data.totalPeople + ' certified',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'gender') {
+										var malePercent = data.percentMale*100;
+										return ['<div class="hoverinfo"><strong>',
+					                        'Students in ' + geo.properties.name,
+					                        '<br /> are roughly ' + malePercent.toPrecision(3) + '% male', '<br />',
 					                        '</strong></div>'].join('');
 									}
 								}
