@@ -79,6 +79,8 @@
 
 					<form id="frm2">
 						<select id="dimensionMapped">
+							<option value="enrolled">Enrollment</option>
+							<option value="population">Normalized Enrollment</option>
 							<option value="certified">Certified</option>
 							<option value="grade">Grade</option>
 							<option value="gender">Gender</option>
@@ -298,9 +300,19 @@
 								newObj.females = 1;
 								newObj.males = 0;
 							}
+							newObj.population = countryPops[student.final_cc_cname_DI];
 							newObj.hdi = student.hdi;
 							mapJson[countryName] = newObj;
 						}
+					}
+
+					function getTotalEnrolled() {
+						var totalEnrolled = 0;
+						for (var key in mapJson) {
+							var data = mapJson[key];
+							totalEnrolled += data.population;
+						}
+						return totalEnrolled;
 					}
 
 					var mapData = {};
@@ -314,6 +326,8 @@
 								mapData[key] = newObj;
 							}
 						}
+
+						var totalEnrolled = getTotalEnrolled();
 						for (var key in mapJson) {
 							var data = mapJson[key];
 
@@ -333,8 +347,39 @@
 
 							var percentMale = newObj.percentMale;
 							// var hdi = newObj.hdi;
+
+							var population = data.population;
+							var totalPop = countryPops["Total"];
+							var normalizedPop = (newObj.totalPeople / (population*1000000)) / (totalEnrolled / (totalPop*1000000));
+							newObj.population = population;
+							newObj.normalizedPop = normalizedPop;
+
 							var fill;
-							if (dimensionToMap === 'certified') {
+							if (dimensionToMap === 'enrolled') {
+								if (newObj.totalPeople < 1000) {
+									fill = 'certvlow';
+								} else if (newObj.totalPeople >= 1000 && newObj.totalPeople < 2000) {
+									fill = 'certlow';
+								} else if (newObj.totalPeople >= 2000 && newObj.totalPeople < 3000) {
+									fill = 'certmedium';
+								} else if (newObj.totalPeople >= 3000 && newObj.totalPeople < 6000) {
+									fill = 'certhigh';
+								} else {
+									fill = 'certvhigh';
+								}
+							} else if (dimensionToMap === 'population') {
+								if (normalizedPop < 10) {
+									fill = 'certvlow';
+								} else if (normalizedPop >= 10 && normalizedPop < 30) {
+									fill = 'certlow';
+								} else if (normalizedPop >= 30 && normalizedPop < 60) {
+									fill = 'certmedium';
+								} else if (normalizedPop >= 60 && normalizedPop < 90) {
+									fill = 'certhigh';
+								} else {
+									fill = 'certvhigh';
+								}
+							} else if (dimensionToMap === 'certified') {
 								if (percentage < 0.20) {
 									// fill = 'certified_very_low';
 									fill = 'certvlow';
@@ -445,6 +490,34 @@
 					countryCodes['Australia'] = 'AUS';
 					countryCodes['New Zealand'] = 'NZL';
 
+					var countryPops = {};
+					countryPops['United States'] = 316.2;
+					countryPops['Canada'] = 35.3;
+					countryPops['Mexico'] = 117.6;
+					countryPops['Colombia'] = 48.0;
+					countryPops['Brazil'] = 195.5;
+					countryPops['United Kingdom'] = 64.1;
+					countryPops['France'] = 63.9;
+					countryPops['Spain'] = 46.6;
+					countryPops['Portugal'] = 10.5;
+					countryPops['Germany'] = 80.6;
+					countryPops['Poland'] = 38.5;
+					countryPops['Greece'] = 11.1;
+					countryPops['Ukraine'] = 45.5;
+					countryPops['Russian Federation'] = 143.5;
+					countryPops['Morocco'] = 33.0;
+					countryPops['Egypt'] = 84.7;
+					countryPops['Nigeria'] = 173.6;
+					countryPops['Pakistan'] = 190.7;
+					countryPops['India'] = 1276.5;
+					countryPops['Bangladesh'] = 156.6;
+					countryPops['China'] = 1357.4;
+					countryPops['Japan'] = 127.3;
+					countryPops['Philippines'] = 96.2;
+					countryPops['Indonesia'] = 248.5;
+					countryPops['Australia'] = 23.1;
+					countryPops['Total'] = 4984.5;
+
 				</script>
 
 				<!-- function to call popovers -->
@@ -500,7 +573,20 @@
 								}
 								else {
 									//if looking at certified
-									if (dimensionToMap === 'certified') {
+									if (dimensionToMap === 'enrolled') {
+										var enrolled = data.totalPeople;
+										return ['<div class="hoverinfo"><strong>',
+					                        'Students Enrolled in ' + geo.properties.name,
+					                        ': ' + enrolled + ' students', '<br />',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'population') {
+										var normalized = data.normalizedPop.toPrecision(3);
+										var population = data.population;
+										return ['<div class="hoverinfo"><strong>',
+					                        'Normalized to the population of ' + geo.properties.name,
+					                        ': ' + normalized + ' in a population of ' + population + ' million', '<br />',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'certified') {
 										var percentage = data.certifiedPercent*100;
 										percentage = percentage.toPrecision(3);
 										return ['<div class="hoverinfo"><strong>',
