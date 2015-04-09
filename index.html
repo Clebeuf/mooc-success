@@ -306,6 +306,15 @@
 						}
 					}
 
+					function getTotalEnrolled() {
+						var totalEnrolled = 0;
+						for (var key in mapJson) {
+							var data = mapJson[key];
+							totalEnrolled += data.population;
+						}
+						return totalEnrolled;
+					}
+
 					var mapData = {};
 					var dimensionToMap;
 					function changeJsonMap() {
@@ -317,6 +326,8 @@
 								mapData[key] = newObj;
 							}
 						}
+
+						var totalEnrolled = getTotalEnrolled();
 						for (var key in mapJson) {
 							var data = mapJson[key];
 
@@ -336,6 +347,13 @@
 
 							var percentMale = newObj.percentMale;
 							// var hdi = newObj.hdi;
+
+							var population = data.population;
+							var totalPop = countryPops["Total"];
+							var normalizedPop = (newObj.totalPeople / (population*1000000)) / (totalEnrolled / (totalPop*1000000));
+							newObj.population = population;
+							newObj.normalizedPop = normalizedPop;
+
 							var fill;
 							if (dimensionToMap === 'enrolled') {
 								if (newObj.totalPeople < 1000) {
@@ -345,6 +363,18 @@
 								} else if (newObj.totalPeople >= 2000 && newObj.totalPeople < 3000) {
 									fill = 'certmedium';
 								} else if (newObj.totalPeople >= 3000 && newObj.totalPeople < 6000) {
+									fill = 'certhigh';
+								} else {
+									fill = 'certvhigh';
+								}
+							} else if (dimensionToMap === 'population') {
+								if (normalizedPop < 10) {
+									fill = 'certvlow';
+								} else if (normalizedPop >= 10 && normalizedPop < 30) {
+									fill = 'certlow';
+								} else if (normalizedPop >= 30 && normalizedPop < 60) {
+									fill = 'certmedium';
+								} else if (normalizedPop >= 60 && normalizedPop < 90) {
 									fill = 'certhigh';
 								} else {
 									fill = 'certvhigh';
@@ -474,7 +504,7 @@
 					countryPops['Poland'] = 38.5;
 					countryPops['Greece'] = 11.1;
 					countryPops['Ukraine'] = 45.5;
-					countryPops['Russiand Federation'] = 143.5;
+					countryPops['Russian Federation'] = 143.5;
 					countryPops['Morocco'] = 33.0;
 					countryPops['Egypt'] = 84.7;
 					countryPops['Nigeria'] = 173.6;
@@ -486,6 +516,7 @@
 					countryPops['Philippines'] = 96.2;
 					countryPops['Indonesia'] = 248.5;
 					countryPops['Australia'] = 23.1;
+					countryPops['Total'] = 4984.5;
 
 				</script>
 
@@ -547,6 +578,13 @@
 										return ['<div class="hoverinfo"><strong>',
 					                        'Students Enrolled in ' + geo.properties.name,
 					                        ': ' + enrolled + ' students', '<br />',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'population') {
+										var normalized = data.normalizedPop.toPrecision(3);
+										var population = data.population;
+										return ['<div class="hoverinfo"><strong>',
+					                        'Normalized to the population of ' + geo.properties.name,
+					                        ': ' + normalized + ' in a population of ' + population + ' million', '<br />',
 					                        '</strong></div>'].join('');
 									} else if (dimensionToMap === 'certified') {
 										var percentage = data.certifiedPercent*100;
