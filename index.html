@@ -79,8 +79,10 @@
 
 					<form id="frm2">
 						<select id="dimensionMapped">
-							<option value="grade">Grade</option>
 							<option value="certified">Certified</option>
+							<option value="grade">Grade</option>
+							<option value="gender">Gender</option>
+							<option value="hdi">HDI</option>
 						</select>
 					</form>
 					<br />
@@ -96,7 +98,7 @@
 
 				function checkAll(checktoggle){
 				  var checkboxes = document.getElementsByTagName('input');
-				 
+
 				  for (var i=0; i<checkboxes.length; i++)  {
 				    if (checkboxes[i].type == 'checkbox')   {
 				    	if (["PH207x","PH278x","CB22x","CS50x","ER22x","14.73x","2.01x","3.091x","6.002x","6.00x","7.00x","8.02x","8.MReV"].indexOf(checkboxes[i].id) > -1){
@@ -265,14 +267,22 @@
 						}
 						if (countryName in mapJson) {
 							jsonObj = mapJson[countryName];
+							jsonObj.totalStudents = jsonObj.totalStudents+1;
 							if (student.certified) {
 								jsonObj.certified = jsonObj.certified+1;
 							} else {
 								jsonObj.uncertified = jsonObj.uncertified+1;
 							}
+							if (student.gender == 'm') {
+								jsonObj.males = jsonObj.males+1;
+							} else if (student.gender == 'f') {
+								jsonObj.females = jsonObj.females+1;
+							}
+							jsonObj.gradeTotal = jsonObj.gradeTotal+student.grade;
 							mapJson[countryName] = jsonObj;
 						} else {
 							var newObj = {};
+							newObj.totalStudents = 1;
 							if (student.certified) {
 								newObj.certified = 1;
 								newObj.uncertified = 0;
@@ -280,11 +290,21 @@
 								newObj.certified = 0;
 								newObj.uncertified = 1;
 							}
+							newObj.gradeTotal = student.grade;
+							if (student.gender == 'm') {
+								newObj.males = 1;
+								newObj.females = 0;
+							} else if (student.gender == 'f') {
+								newObj.females = 1;
+								newObj.males = 0;
+							}
+							newObj.hdi = student.hdi;
 							mapJson[countryName] = newObj;
 						}
 					}
 
 					var mapData = {};
+					var dimensionToMap;
 					function changeJsonMap() {
 						for (var key in mapData) {
 							if (!(key in mapJson)) {
@@ -298,20 +318,73 @@
 							var data = mapJson[key];
 
 							var newObj = {};
-							var percentage = data.certified / (data.certified + data.uncertified);
+							newObj.certified = data.certified;
+							newObj.totalPeople = data.certified + data.uncertified;
+							var percentage = newObj.certified / newObj.totalPeople;
 							newObj.certifiedPercent = percentage;
+							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
+							newObj.percentMale = data.males / newObj.totalPeople;
+							newObj.percentFemale = data.females / newObj.totalPeople;
+							// newObj.hdi = data.hdi;
+
+							var gradeAverage = newObj.gradeAverage;
+							var dimension = document.getElementById("dimensionMapped");
+							dimensionToMap = dimension.options[dimension.selectedIndex].value;
+
+							var percentMale = newObj.percentMale;
+							// var hdi = newObj.hdi;
 							var fill;
-							if (percentage < 0.20) {
-								fill = 'verylow';
-							} else if (percentage >= 0.20 && percentage < 0.40) {
-								fill = 'low';
-							} else if (percentage >= 0.40 && percentage < 0.60) {
-								fill = 'medium';
-							} else if (percentage >= 0.60 && percentage < 0.80) {
-								fill = 'high';
-							} else {
-								fill = 'veryhigh';
+							if (dimensionToMap === 'certified') {
+								if (percentage < 0.20) {
+									// fill = 'certified_very_low';
+									fill = 'certvlow';
+								} else if (percentage >= 0.20 && percentage < 0.40) {
+									fill = 'certlow';
+								} else if (percentage >= 0.40 && percentage < 0.60) {
+									fill = 'certmedium';
+								} else if (percentage >= 0.60 && percentage < 0.80) {
+									fill = 'certhigh';
+								} else {
+									fill = 'certvhigh';
+								}
+							} else if (dimensionToMap === 'grade') {
+								if (gradeAverage < 20) {
+									fill = 'gradevlow';
+								} else if (gradeAverage >= 20 && gradeAverage < 40) {
+									fill = 'gradelow';
+								} else if (gradeAverage >= 40 && gradeAverage < 60) {
+									fill = 'grademedium';
+								} else if (gradeAverage >= 60 && gradeAverage < 80) {
+									fill = 'gradehigh';
+								} else {
+									fill = 'gradevhigh';
+								}
+							} else if (dimensionToMap === 'gender') {
+								if (percentMale < .30) {
+									fill = 'mostlyFemale';
+								} else if (percentMale >= .30 && percentMale < .45) {
+									fill = 'somewhatFemale';
+								} else if (percentMale >= .45 && percentMale < .55) {
+									fill = 'fiftyfifty';
+								} else if (percentMale >= .55 && percentMale < .70) {
+									fill = 'somewhatMale';
+								} else {
+									fill = 'mostlyMale';
+								}
 							}
+							// else if (dimensionToMap === 'hdi') {
+							// 	if (hdi < .2) {
+							// 		fill = 'certvlow';
+							// 	} else if (hdi >= .2 && hdi < .4) {
+							// 		fill = 'certlow';
+							// 	} else if (hdi >= .4 && hdi < .6) {
+							// 		fill = 'certmedium';
+							// 	} else if (hdi >= .6 && hdi < .80) {
+							// 		fill = 'certhigh';
+							// 	} else {
+							// 		fill = 'certvhigh';
+							// 	}
+							// }
 							newObj.fillKey = fill;
 							mapData[key] = newObj;
 						}
@@ -399,11 +472,21 @@
 						element: document.getElementById("basic"),
 						fills: {
 							defaultFill: "#ABDDA4",
-							verylow: "#87CEFA",
-							low: "#6495ED",
-							medium: "#4169E1",
-							high: "#0000FF",
-							veryhigh: "#0000CD"
+							certvlow: "#87CEFA",
+							certlow: "#6495ED",
+							certmedium: "#4169E1",
+							certhigh: "#0000FF",
+							certvhigh: "#0000CD",
+							gradevlow: "#FFFF00",
+							gradelow: "#FFCC00",
+							grademedium: "#FF9900",
+							gradehigh: "#FF6600",
+							gradevhigh: "#FF3300",
+							mostlyMale: "#0B0B61",
+							somewhatMale: "#3104B4",
+							fiftyfifty: "#4000FF",
+							somewhatFemale: "#8000FF",
+							mostlyFemale: "#BF00FF"
 						},
 						data: {
 
@@ -417,12 +500,32 @@
 								}
 								else {
 									//if looking at certified
-									var percentage = data.certifiedPercent*100;
-									percentage = percentage.toPrecision(3);
-									return ['<div class="hoverinfo"><strong>',
-				                        'Students Certified in ' + geo.properties.name,
-				                        ': ' + percentage + '%',
-				                        '</strong></div>'].join('');
+									if (dimensionToMap === 'certified') {
+										var percentage = data.certifiedPercent*100;
+										percentage = percentage.toPrecision(3);
+										return ['<div class="hoverinfo"><strong>',
+					                        'Students Certified in ' + geo.properties.name,
+					                        ': ' + percentage + '%', '<br />',
+											data.certified + ' out of ' + data.totalPeople + ' certified',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'grade') {
+										return ['<div class="hoverinfo"><strong>',
+					                        'Average Grade of Students <br /> in ' + geo.properties.name,
+					                        ': ' + data.gradeAverage.toPrecision(3) + '%', '<br />',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap === 'gender') {
+										var malePercent = data.percentMale*100;
+										if (data.percentMale < 1 && data.percentMale > 0) malePercent = malePercent.toPrecision(2);
+										var femalePercent = data.percentFemale*100;
+										if (data.percentFemale < 1 && data.percentFemale > 0) femalePercent = femalePercent.toPrecision(2);
+										return ['<div class="hoverinfo"><strong>',
+					                        'Students in ' + geo.properties.name,
+					                        '<br /> have a m:f ratio of ' + malePercent + ':' + femalePercent, '<br />',
+											' out of ' + data.totalPeople + ' students', '<br />',
+					                        '</strong></div>'].join('');
+									} else if (dimensionToMap == 'hdi') {
+
+									}
 								}
 							}
 						}
@@ -430,9 +533,10 @@
 
 					function updateChoropleth(json) {
 						basic.updateChoropleth(json);
-						basic.legend();
+						// basic.legend();
 					}
 
+					getBrushedData();
 			     </script>
 			</div>
 		 </div>
