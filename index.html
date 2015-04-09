@@ -40,14 +40,18 @@
 					<h4>Filters:</h4>
 					<form id="frm1" onchange="refreshCoordinates()">
 						Type of Data:
-						<select id="explored">
+						<select id="explored" >
 						  <option value="1">Explored</option>
 						  <option value="0">Not Explored</option>
 						</select>
 						<div class="checkbox">
-						  	Years:
-						      <br><label><input type="checkbox" id="2012" checked> 2012</label>
-						      <br><label><input type="checkbox" id="2013"> 2013</label>
+						  	Years:<br>
+						      <label class="checkbox-inline">
+						      	<input type="checkbox" id="2012" checked> 2012
+						      </label>
+						      <label class="checkbox-inline">
+						      	<input type="checkbox" id="2013" checked> 2013
+						      </label>
 						</div>
 					</form>
 					<form id="courseForm" onchange="refreshCoordinates()">
