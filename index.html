@@ -44,6 +44,14 @@
 						  <option value="1">Explored</option>
 						  <option value="0">Not Explored</option>
 						</select>
+
+						Colour Data by:
+						<select id="dataColouring" >
+						  <option value="certified">Certified</option>
+						  <option value="gend">Gender</option>
+						  <option value="LoE_DI">Education Level</option>
+						</select>
+
 						<div class="checkbox">
 						  	Years:<br>
 						      <label class="checkbox-inline">
@@ -204,6 +212,7 @@
 
 					// load the coordinates from the file and set the options
 					function loadCoordinates(){
+
 						// create coloured tuples
 						var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
 						var color = function(d) { return colorgen(d.certified); };
@@ -231,11 +240,25 @@
 
 						// Filter the preloaded json
 						dataF = filterDataset();
-
 						dataC = filterByCourse(dataF);
+
+
+						var e = document.getElementById("dataColouring");
+						var dimention = e.options[e.selectedIndex].value;
+						if (dimention == 'LoE_DI'){
+							var colorgen = d3.scale.ordinal().range(["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c"]);
+							var color = function(d) { return colorgen(d.LoE_DI); };
+						}else if(dimention == 'certified'){
+							var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
+							var color = function(d) { return colorgen(d.certified); };
+						}else{
+							var colorgen = d3.scale.ordinal().range(["steelblue","brown"]);
+							var color = function(d) { return colorgen(d.gender); };
+						}
 
 						// refresh the coordinates
 						pc.data(dataC)
+						.color(color)
 						.render()
 						.updateAxes();
 
