@@ -86,7 +86,7 @@
 					<br><br>
 
 					<form id="frm2">
-						<select id="dimensionMapped">
+						<select id="dimensionMapped" onchange="getBrushedData()">
 							<option value="enrolled">Enrollment</option>
 							<option value="population">Normalized Enrollment</option>
 							<option value="certified">Certified</option>
@@ -96,7 +96,7 @@
 						</select>
 					</form>
 					<br />
-					<button onclick="getBrushedData()">See on Map</button>
+					<!-- <button onclick="getBrushedData()">See on Map</button> -->
 				</div>
 			</div>
 			<div class="col-md-10">
@@ -652,8 +652,8 @@
 					getBrushedData();
 			     </script>
 			</div>
-			//all shamelessly stolen from http://bl.ocks.org/syntagmatic/7e7ee384f7cf515f6602
 			<script>
+				//all shamelessly stolen from http://bl.ocks.org/syntagmatic/7e7ee384f7cf515f6602
 				d3.select("#example")
 				.on("mousemove", function() {
 					var mousePosition = d3.mouse(this);
