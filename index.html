@@ -277,7 +277,7 @@
 						if (pc.brushed()) {
 							data = pc.brushed();
 						} else {
-							data = json;
+							data = filterDataset();
 						}
 						for (i = 0; i < data.length; i++) {
 							addToJsonMapData(data[i]);
