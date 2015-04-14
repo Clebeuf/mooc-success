@@ -6,8 +6,8 @@
 	<!-- JQuery script -->
 	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 
-	<!-- Style sheet for D3 -->
-	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<!-- Style sheet -->
+	<link rel="stylesheet" type="text/css" href="css/base.css">
 
 	<!-- BOOTSTRAP SCRIPTS-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -27,83 +27,157 @@
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
 	<script src="js/datamaps.world.min.js"></script>
 
+<div class= "container-fluid">
+	<div class="row">
+		<div class="col-md-12 header-bar">
+			<h2>Student Success in edX MOOCs</h2>
+		</div>
+	</div>
+</div>
 	<div class="container">
 
 		<div class="row">
-			<div class="col-md-12">
-				<h1>Visualizing MOOCs Success</h1>
-			</div>
-		</div>
-		<div class="row">
 			<div class="col-md-2">
-				<div class="form-group">
-					<h4>Filters:</h4>
-					<form id="frm1" onchange="refreshCoordinates()">
-						Type of Data:
-						<select id="explored" >
-						  <option value="1">Explored</option>
-						  <option value="0">Not Explored</option>
-						</select>
+				<div class="container-fluid filter-bar">
+					<div class="row title-bar">
+						Refine Course Data
+					</div>
+					<div class="row filters">
+						<div class="form-group" onchange="refreshCoordinates()">
 
-						Colour Data by:
-						<select id="dataColouring" >
-						  <option value="certified">Certified</option>
-						  <option value="gend">Gender</option>
-						  <option value="LoE_DI">Education Level</option>
-						</select>
+							<div class="title">Student Activity</div>
+							<select id="explored" >
+							  <option value="1">Explored</option>
+							  <option value="0">Not Explored</option>
+							  <option value="2">Enrolled</option>
+							</select>
 
-						<div class="checkbox">
-						  	Years:<br>
-						      <label class="checkbox-inline">
-						      	<input type="checkbox" id="2012" checked> 2012
-						      </label>
-						      <label class="checkbox-inline">
-						      	<input type="checkbox" id="2013" checked> 2013
-						      </label>
+							<br><br>
+
+							<div class="title">Filter By Course</div>
+							<div class="filter-by-course">
+							  	Semester Offered:<br>
+							  	<!-- <div class="checkbox"> -->
+							      <label class="checkbox-inline">
+							      	<input type="checkbox" id="2012" checked> 2012
+							      </label>
+							      <label class="checkbox-inline">
+							      	<input type="checkbox" id="2013" checked> 2013
+							      </label>
+
+
+								<div id="courseForm">
+
+									  	Harvard Offerings:
+									  	<div class="well well-sm course-well">
+									  		<ul>
+												<li><input type="checkbox" id="PH207x" checked> HealthStat</li>
+												<li><input type="checkbox" id="PH278x" checked> HealthEnv</li>
+												<li><input type="checkbox" id="CB22x" checked> HeroesX *</li>
+												<li><input type="checkbox" id="CS50x" checked> Intro to CS *</li>
+												<li><input type="checkbox" id="ER22x" checked> JusticeX *</li>
+											</ul>
+										</div>
+										MIT Offerings:
+										<div class="well well-sm course-well">
+											<ul>
+												<li><input type="checkbox" id="14.73x" checked> Poverty</li>
+												<li><input type="checkbox" id="2.01x" checked> Structures</li>
+												<li><input type="checkbox" id="3.091x" checked> SS Chem</li>
+												<li><input type="checkbox" id="6.002x" checked> Circuits</li>
+												<li><input type="checkbox" id="6.00x" checked> Intro to CS</li>
+												<li><input type="checkbox" id="7.00x" checked> Biology</li>
+												<li><input type="checkbox" id="8.02x" checked> Electricity</li>
+												<li><input type="checkbox" id="8.MReV" checked> MechRev</li>
+											</ul>
+										</div>
+
+									<button type="button" class="btn btn-default btn-xs" onclick="javascript:checkAll(true);">Select All</button>
+									<button type="button" class="btn btn-default btn-xs" onclick="javascript:checkAll(false);">Unselect</button>
+								</div>
+							</div>
+
+							<br>
+							<div class="title">Colour by attribute</div>
+							<select id="dataColouring" >
+							  <option value="certified">Certified</option>
+							  <option value="gend">Gender</option>
+							  <option value="LoE_DI">Education Level</option>
+							</select>
+
 						</div>
-					</form>
-					<form id="courseForm" onchange="refreshCoordinates()">
-						<div class="checkbox">
-						  	Harvard Courses:
-								<br><label><input type="checkbox" id="PH207x" checked> HealthStat</label>
-								<br><label><input type="checkbox" id="PH278x" checked> HealthEnv</label>
-								<br><label><input type="checkbox" id="CB22x" checked> HeroesX*</label>
-								<br><label><input type="checkbox" id="CS50x" checked> Intro to CS*</label>
-								<br><label><input type="checkbox" id="ER22x" checked> JusticeX*</label>
-							<br>MIT Courses:
-								<br><label><input type="checkbox" id="14.73x" checked> Poverty</label>
-								<br><label><input type="checkbox" id="2.01x" checked> Structures</label>
-								<br><label><input type="checkbox" id="3.091x" checked> SS Chem</label>
-								<br><label><input type="checkbox" id="6.002x" checked> Circuits</label>
-								<br><label><input type="checkbox" id="6.00x" checked> Intro to CS</label>
-								<br><label><input type="checkbox" id="7.00x" checked> Biology</label>
-								<br><label><input type="checkbox" id="8.02x" checked> Electricity</label>
-								<br><label><input type="checkbox" id="8.MReV" checked> MechRev</label>
-						</div>
-						<a onclick="javascript:checkAll(true);" href="javascript:void();">check all</a>
-						<a onclick="javascript:checkAll(false);" href="javascript:void();">uncheck all</a>
-					</form>
-					<br><br>
-
-					<form id="frm2">
-						<select id="dimensionMapped" onchange="getBrushedData()">
-							<option value="enrolled">Enrollment</option>
-							<option value="population">Normalized Enrollment</option>
-							<option value="certified">Certified</option>
-							<option value="grade">Grade</option>
-							<option value="gender">Gender</option>
-							<option value="education">Education Index</option>
-						</select>
-					</form>
-					<br />
-					<!-- <button onclick="getBrushedData()">See on Map</button> -->
+					</div>
 				</div>
 			</div>
-			<div class="col-md-10">
 
-				<div id="example" class="parcoords" style="width:100%;height:400px"></div>
+			<div class="col-md-10 d3">
+				<div class="row title-bar">
+					Parallel Coordinate Filters
+				</div>
+				<div class="row">
+					<div id="example" class="parcoords" style="width:100%;height:400px"></div>
+				</div>
+			</div>
 
-				<script>
+
+<!-- MAP VIEW -->
+
+		</div>
+		<div class="row">
+
+			<div class="col-md-2">
+				<div class="container-fluid filter-bar">
+					<div class="row title-bar">
+						Refine Map Display
+					</div>
+					<div class="row filters">
+						Select attribute level to display on the world map
+						<form id="frm2">
+							<select id="dimensionMapped" onchange="getBrushedData()">
+								<option value="enrolled">Enrollment</option>
+								<option value="population">Normalized Enrollment</option>
+								<option value="certified">Certified</option>
+								<option value="grade">Grade</option>
+								<option value="gender">Gender</option>
+								<option value="education">Education Index</option>
+							</select>
+						</form>
+					</div>
+				</div>
+
+				<div class="container-fluid filter-bar">
+					<div class="row title-bar">
+						Map Legend
+					</div>
+					<div class="row filters">
+						<div id="legend">
+							<div id="lowest" style="width: 20px; height: 20px; background: #E8DDFF"></div>
+							<span id="lowestText">< 1000 Enrolled</span><br /><br />
+							<div id="low" style="width: 20px; height: 20px; background: #C5A7FF"></div>
+							<span id="lowText">1000-2000 Enrolled</span><br /><br />
+							<div id="middle" style="width: 20px; height: 20px; background: #AB7FFF"></div>
+							<span id="middleText">2000-3000 Enrolled</span><br /><br />
+							<div id="high" style="width: 20px; height: 20px; background: #935BFF"></div>
+							<span id="highText">3000-6000 Enrolled</span><br /><br />
+							<div id="highest" style="width: 20px; height: 20px; background: #7833FD"></div>
+							<span id="highestText">> 6000 Enrolled</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-md-10 d3">
+				<div class="row title-bar">
+					Geographical View of Data Selected in Parallel Coordinates
+				</div>
+				<div class="row">
+					<div id="basic" style="position: relative; width: 100%; height:400px;"></div>
+				</div>
+			</div>
+
+<!-- END OF MAP VIEW -->
+			<script>
 
 
 				function checkAll(checktoggle){
@@ -214,7 +288,7 @@
 					function loadCoordinates(){
 
 						// create coloured tuples
-						var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
+						var colorgen = d3.scale.ordinal().range(["#b2df8a","#e89747"]);
 						var color = function(d) { return colorgen(d.certified); };
 
 						// generate the parallel-coordinates
@@ -249,10 +323,10 @@
 							var colorgen = d3.scale.ordinal().range(["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c"]);
 							var color = function(d) { return colorgen(d.LoE_DI); };
 						}else if(dimention == 'certified'){
-							var colorgen = d3.scale.ordinal().range(["brown","steelblue"]);
+							var colorgen = d3.scale.ordinal().range(["#b2df8a","#e89747"]);
 							var color = function(d) { return colorgen(d.certified); };
 						}else{
-							var colorgen = d3.scale.ordinal().range(["steelblue","brown"]);
+							var colorgen = d3.scale.ordinal().range(["#fb9a99","#1f78b4"]);
 							var color = function(d) { return colorgen(d.gender); };
 						}
 
@@ -581,30 +655,11 @@
 					    $('[data-toggle="popover"]').popover();
 					});
 				</script>
-
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<h3>THE TEMPORAL CONTROL GOES HERE</h3>
-				<div id="slider"></div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-12">
 				<div id="basic" style="position: relative; width: 100%; height: 500px;"></div>
-				<div id="legend">
-					<div id="lowest" style="width: 20px; height: 20px; background: #E8DDFF"></div>
-					<span id="lowestText">< 1000 Enrolled</span>
-					<div id="low" style="width: 20px; height: 20px; background: #C5A7FF"></div>
-					<span id="lowText">1000-2000 Enrolled</span>
-					<div id="middle" style="width: 20px; height: 20px; background: #AB7FFF"></div>
-					<span id="middleText">2000-3000 Enrolled</span>
-					<div id="high" style="width: 20px; height: 20px; background: #935BFF"></div>
-					<span id="highText">3000-6000 Enrolled</span>
-					<div id="highest" style="width: 20px; height: 20px; background: #7833FD"></div>
-					<span id="highestText">> 6000 Enrolled</span>
-				</div>
 			     <script>
 			       //basic map config with custom fills, mercator projection
 					var basic = new Datamap({
@@ -848,7 +903,10 @@
 						}
 					}
 			     </script>
-			</div>
+
+
+
+	<!-- HOVER PARACOORD CODE -->
 			<script>
 				//all shamelessly stolen from http://bl.ocks.org/syntagmatic/7e7ee384f7cf515f6602
 				d3.select("#example")
