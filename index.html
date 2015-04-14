@@ -23,7 +23,7 @@
 
 	<!-- SCRIPTS -->
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-	<script src="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.js"></script>
+	<script src="http://mostapharoudsari.github.io/Honeybee/pc_source_files/d3/d3.parcoords.js"></script>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
 	<script src="js/datamaps.world.min.js"></script>
 
@@ -86,7 +86,7 @@
 					<br><br>
 
 					<form id="frm2">
-						<select id="dimensionMapped">
+						<select id="dimensionMapped" onchange="getBrushedData()">
 							<option value="enrolled">Enrollment</option>
 							<option value="population">Normalized Enrollment</option>
 							<option value="certified">Certified</option>
@@ -96,7 +96,7 @@
 						</select>
 					</form>
 					<br />
-					<button onclick="getBrushedData()">See on Map</button>
+					<!-- <button onclick="getBrushedData()">See on Map</button> -->
 				</div>
 			</div>
 			<div class="col-md-10">
@@ -263,6 +263,10 @@
 						.updateAxes();
 
 					}
+
+					pc.on("highlight", function(data) {
+						getBrushedData();
+					});
 
 					var mapJson = {};
 
@@ -567,7 +571,7 @@
 					var basic = new Datamap({
 						element: document.getElementById("basic"),
 						fills: {
-							defaultFill: "#ABDDA4",
+							defaultFill: "#dddddd",
 							certvlow: "#87CEFA",
 							certlow: "#6495ED",
 							certmedium: "#4169E1",
@@ -648,6 +652,130 @@
 					getBrushedData();
 			     </script>
 			</div>
+			<script>
+				//all shamelessly stolen from http://bl.ocks.org/syntagmatic/7e7ee384f7cf515f6602
+				d3.select("#example")
+				.on("mousemove", function() {
+					var mousePosition = d3.mouse(this);
+					highlightLineOnClick(mousePosition, true); //true will also add tooltip
+				})
+				.on("mouseout", function(){
+					// cleanTooltip();
+					pc.unhighlight();
+				});
+
+				function highlightLineOnClick(mouseClick, drawTooltip){
+					var clicked = [];
+					var clickedCenPts = [];
+
+					clickedData = getClickedLines(mouseClick);
+
+					if (clickedData && clickedData[0].length!=0){
+
+						clicked = clickedData[0];
+						clickedCenPts = clickedData[1];
+
+						// highlight clicked line
+						pc.highlight(clicked);
+
+						if (drawTooltip){
+							// clean if anything is there
+							// cleanTooltip();
+							// add tooltip
+							// addTooltip(clicked, clickedCenPts);
+						}
+
+					}
+				}
+
+				function getClickedLines(mouseClick){
+					var clicked = [];
+					var clickedCenPts = [];
+
+					// find which data is activated right now
+					var activeData = getActiveData();
+
+					// find centriod points
+					var graphCentPts = getCentroids(activeData);
+
+					if (graphCentPts.length==0) return false;
+
+					// find between which axes the point is
+					var axeNum = findAxes(mouseClick, graphCentPts[0]);
+					if (!axeNum) return false;
+
+					graphCentPts.forEach(function(d, i){
+					if (clicked.length > 1) return;
+						if (isOnLine(d[axeNum-1], d[axeNum], mouseClick, 2)){
+							clicked.push(activeData[i]);
+							clickedCenPts.push(graphCentPts[i]); // for tooltip
+						}
+					});
+
+					return [clicked, clickedCenPts]
+				}
+
+				function isOnLine(startPt, endPt, testPt, tol){
+					// check if test point is close enough to a line
+					// between startPt and endPt. close enough means smaller than tolerance
+					var x0 = testPt[0];
+					var	y0 = testPt[1];
+					var x1 = startPt[0];
+					var	y1 = startPt[1];
+					var x2 = endPt[0];
+					var	y2 = endPt[1];
+					var Dx = x2 - x1;
+					var Dy = y2 - y1;
+					var delta = Math.abs(Dy*x0 - Dx*y0 - x1*y2+x2*y1)/Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
+					//console.log(delta);
+					if (delta <= tol) return true;
+					return false;
+				}
+
+				function findAxes(testPt, cenPts){
+					// finds between which two axis the mouse is
+					var x = testPt[0];
+					var y = testPt[1];
+
+					// make sure it is inside the range of x
+					if (cenPts[0][0] > x) return false;
+					if (cenPts[cenPts.length-1][0] < x) return false;
+
+					// find between which segment the point is
+					for (var i=0; i<cenPts.length; i++){
+						if (cenPts[i][0] > x) return i;
+					}
+				}
+
+				function getCentroids(data){
+					// this function returns centroid points for data. I had to change the source
+					// for parallelcoordinates and make compute_centroids public.
+					// I assume this should be already somewhere in graph and I don't need to recalculate it
+					// but I couldn't find it so I just wrote this for now
+					var margins = pc.margin();
+					var graphCentPts = [];
+
+					data.forEach(function(d){
+
+						var initCenPts = pc.compute_centroids(d).filter(function(d, i){return i%2==0;});
+
+						// move points based on margins
+						var cenPts = initCenPts.map(function(d){
+							return [d[0] + margins["left"], d[1]+ margins["top"]];
+						});
+
+						graphCentPts.push(cenPts);
+					});
+
+					return graphCentPts;
+				}
+
+				function getActiveData(){
+					// I'm pretty sure this data is already somewhere in graph
+					if (pc.brushed()!=false) return pc.brushed();
+					return pc.data();
+				}
+			</script>
 		 </div>
 	 </div>
 </body>
