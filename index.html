@@ -366,14 +366,14 @@
 							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
 							newObj.percentMale = data.males / newObj.totalPeople;
 							newObj.percentFemale = data.females / newObj.totalPeople;
-							// newObj.hdi = data.hdi;
+							newObj.hdi = data.hdi;
 
 							var gradeAverage = newObj.gradeAverage;
 							var dimension = document.getElementById("dimensionMapped");
 							dimensionToMap = dimension.options[dimension.selectedIndex].value;
 
 							var percentMale = newObj.percentMale;
-							// var hdi = newObj.hdi;
+							var hdi = newObj.hdi;
 
 							var population = data.population;
 							var totalPop = countryPops["Total"];
@@ -444,19 +444,19 @@
 									fill = 'mostlyMale';
 								}
 							}
-							// else if (dimensionToMap === 'hdi') {
-							// 	if (hdi < .2) {
-							// 		fill = 'certvlow';
-							// 	} else if (hdi >= .2 && hdi < .4) {
-							// 		fill = 'certlow';
-							// 	} else if (hdi >= .4 && hdi < .6) {
-							// 		fill = 'certmedium';
-							// 	} else if (hdi >= .6 && hdi < .80) {
-							// 		fill = 'certhigh';
-							// 	} else {
-							// 		fill = 'certvhigh';
-							// 	}
-							// }
+							else if (dimensionToMap === 'hdi') {
+								if (hdi < .2) {
+									fill = 'certvlow';
+								} else if (hdi >= .2 && hdi < .4) {
+									fill = 'certlow';
+								} else if (hdi >= .4 && hdi < .6) {
+									fill = 'certmedium';
+								} else if (hdi >= .6 && hdi < .80) {
+									fill = 'certhigh';
+								} else {
+									fill = 'certvhigh';
+								}
+							}
 							newObj.fillKey = fill;
 							mapData[key] = newObj;
 						}
@@ -637,7 +637,11 @@
 											' out of ' + data.totalPeople + ' students', '<br />',
 					                        '</strong></div>'].join('');
 									} else if (dimensionToMap == 'hdi') {
-
+										var hdi = data.hdi;
+										return ['<div class="hoverinfo"><strong>',
+					                        'HDI in country ' + geo.properties.name + ': ',
+											hdi, ' with ' + data.totalPeople + ' students',
+					                        '</strong></div>'].join('');
 									}
 								}
 							}
@@ -647,10 +651,81 @@
 					function updateChoropleth(json) {
 						basic.updateChoropleth(json);
 						// basic.legend();
+						updateLegend();
 					}
 
 					getBrushedData();
+
+					function updateLegend() {
+						switch (dimensionToMap) {
+							case 'enrolled': {
+
+								break;
+							}
+							case 'population': {
+								// var lowest = document.getElementById('lowest');
+								// lowest.style.background = "black";
+								// var low = document.getElementById('low');
+								// low.style.background = "black";
+								// var middle = document.getElementById('middle');
+								// middle.style.background = "black";
+								// var high = document.getElementById('high');
+								// high.style.background = "black";
+								// var highest = document.getElementById('highest');
+								// highest.style.background = "black";
+								break;
+							}
+							case 'certified': {
+
+								break;
+							}
+							case 'grade': {
+								var lowest = document.getElementById('lowest');
+								lowest.style.background = "#FFFF00";
+								var lowestText = document.getElementById('lowestText');
+								lowestText.innerHTML = "Lowest Grade";
+								var low = document.getElementById('low');
+								low.style.background = "#FFCC00";
+								var lowText = document.getElementById('lowText');
+								lowText.innerHTML = "Low Grade";
+								var middle = document.getElementById('middle');
+								middle.style.background = "#FF9900";
+								var middleText = document.getElementById('middleText');
+								middleText.innerHTML = "Middle Grade";
+								var high = document.getElementById('high');
+								high.style.background = "#FF6600";
+								var highText = document.getElementById('highText');
+								highText.innerHTML = "High Grade";
+								var highest = document.getElementById('highest');
+								highest.style.background = "#FF3300";
+								var highestText = document.getElementById('highestText');
+								highestText.innerHTML = "Highest Grade";
+								break;
+							}
+							case 'gender': {
+
+								break;
+							}
+							case 'hdi': {
+
+								break;
+							}
+						}
+					}
 			     </script>
+
+				<div id="legend">
+					<div id="lowest" style="width: 20px; height: 20px; background: blue"></div>
+					<span id="lowestText">Lowest</span>
+					<div id="low" style="width: 20px; height: 20px; background: red"></div>
+					<span id="lowText">Low</span>
+					<div id="middle" style="width: 20px; height: 20px; background: green"></div>
+					<span id="middleText">Middle</span>
+					<div id="high" style="width: 20px; height: 20px; background: yellow"></div>
+					<span id="highText">High</span>
+					<div id="highest" style="width: 20px; height: 20px; background: orange"></div>
+					<span id="highestText">Highest</span>
+				</div>
 			</div>
 			<script>
 				//all shamelessly stolen from http://bl.ocks.org/syntagmatic/7e7ee384f7cf515f6602
