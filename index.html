@@ -92,7 +92,7 @@
 							<option value="certified">Certified</option>
 							<option value="grade">Grade</option>
 							<option value="gender">Gender</option>
-							<option value="hdi">HDI</option>
+							<option value="education">Education Index</option>
 						</select>
 					</form>
 					<br />
@@ -328,7 +328,8 @@
 								newObj.males = 0;
 							}
 							newObj.population = countryPops[student.final_cc_cname_DI];
-							newObj.hdi = student.hdi;
+							// newObj.hdi = student.hdi;
+							newObj.education = countryEdu[student.final_cc_cname_DI];
 							mapJson[countryName] = newObj;
 						}
 					}
@@ -366,14 +367,14 @@
 							newObj.gradeAverage = data.gradeTotal / newObj.totalPeople;
 							newObj.percentMale = data.males / newObj.totalPeople;
 							newObj.percentFemale = data.females / newObj.totalPeople;
-							newObj.hdi = data.hdi;
+							newObj.education = data.education;
 
 							var gradeAverage = newObj.gradeAverage;
 							var dimension = document.getElementById("dimensionMapped");
 							dimensionToMap = dimension.options[dimension.selectedIndex].value;
 
 							var percentMale = newObj.percentMale;
-							var hdi = newObj.hdi;
+							var education = newObj.education;
 
 							var population = data.population;
 							var totalPop = countryPops["Total"];
@@ -384,27 +385,27 @@
 							var fill;
 							if (dimensionToMap === 'enrolled') {
 								if (newObj.totalPeople < 1000) {
-									fill = 'certvlow';
+									fill = 'enrolledvlow';
 								} else if (newObj.totalPeople >= 1000 && newObj.totalPeople < 2000) {
-									fill = 'certlow';
+									fill = 'enrolledlow';
 								} else if (newObj.totalPeople >= 2000 && newObj.totalPeople < 3000) {
-									fill = 'certmedium';
+									fill = 'enrolledmedium';
 								} else if (newObj.totalPeople >= 3000 && newObj.totalPeople < 6000) {
-									fill = 'certhigh';
+									fill = 'enrolledhigh';
 								} else {
-									fill = 'certvhigh';
+									fill = 'enrolledvhigh';
 								}
 							} else if (dimensionToMap === 'population') {
 								if (normalizedPop < 10) {
-									fill = 'certvlow';
+									fill = 'enrolledvlow';
 								} else if (normalizedPop >= 10 && normalizedPop < 30) {
-									fill = 'certlow';
+									fill = 'enrolledlow';
 								} else if (normalizedPop >= 30 && normalizedPop < 60) {
-									fill = 'certmedium';
+									fill = 'enrolledmedium';
 								} else if (normalizedPop >= 60 && normalizedPop < 90) {
-									fill = 'certhigh';
+									fill = 'enrolledhigh';
 								} else {
-									fill = 'certvhigh';
+									fill = 'enrolledvhigh';
 								}
 							} else if (dimensionToMap === 'certified') {
 								if (percentage < 0.20) {
@@ -444,17 +445,17 @@
 									fill = 'mostlyMale';
 								}
 							}
-							else if (dimensionToMap === 'hdi') {
-								if (hdi < .2) {
-									fill = 'certvlow';
-								} else if (hdi >= .2 && hdi < .4) {
-									fill = 'certlow';
-								} else if (hdi >= .4 && hdi < .6) {
-									fill = 'certmedium';
-								} else if (hdi >= .6 && hdi < .80) {
-									fill = 'certhigh';
+							else if (dimensionToMap === 'education') {
+								if (education < .6) {
+									fill = 'eduvlow';
+								} else if (education >= .6 && education < .7) {
+									fill = 'edulow';
+								} else if (education >= .7 && education < .8) {
+									fill = 'edumedium';
+								} else if (education >= .8 && education < .9) {
+									fill = 'eduhigh';
 								} else {
-									fill = 'certvhigh';
+									fill = 'eduvhigh';
 								}
 							}
 							newObj.fillKey = fill;
@@ -545,6 +546,33 @@
 					countryPops['Australia'] = 23.1;
 					countryPops['Total'] = 4984.5;
 
+					var countryEdu = {};
+					countryEdu['United States'] = 0.890;
+					countryEdu['Canada'] = 0.850;
+					countryEdu['Mexico'] = 0.638;
+					countryEdu['Colombia'] = 0.602;
+					countryEdu['Brazil'] = 0.661;
+					countryEdu['United Kingdom'] = 0.860;
+					countryEdu['France'] = 0.816;
+					countryEdu['Spain'] = 0.794;
+					countryEdu['Portugal'] = 0.728;
+					countryEdu['Germany'] = 0.884;
+					countryEdu['Poland'] = 0.825;
+					countryEdu['Greece'] = 0.797;
+					countryEdu['Ukraine'] = 0.796;
+					countryEdu['Russian Federation'] = 0.780;
+					countryEdu['Morocco'] = 0.468;
+					countryEdu['Egypt'] = 0.573;
+					countryEdu['Nigeria'] = 0.425;
+					countryEdu['Pakistan'] = 0.372;
+					countryEdu['India'] = 0.473;
+					countryEdu['Bangladesh'] = 0.447;
+					countryEdu['China'] = 0.610;
+					countryEdu['Japan'] = 0.808;
+					countryEdu['Philippines'] = 0.610;
+					countryEdu['Indonesia'] = 0.603;
+					countryEdu['Australia'] = 0.927;
+
 				</script>
 
 				<!-- function to call popovers -->
@@ -565,28 +593,49 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div id="basic" style="position: relative; width: 100%; height: 500px;"></div>
-
+				<div id="legend">
+					<div id="lowest" style="width: 20px; height: 20px; background: #E8DDFF"></div>
+					<span id="lowestText">< 1000 Enrolled</span>
+					<div id="low" style="width: 20px; height: 20px; background: #C5A7FF"></div>
+					<span id="lowText">1000-2000 Enrolled</span>
+					<div id="middle" style="width: 20px; height: 20px; background: #AB7FFF"></div>
+					<span id="middleText">2000-3000 Enrolled</span>
+					<div id="high" style="width: 20px; height: 20px; background: #935BFF"></div>
+					<span id="highText">3000-6000 Enrolled</span>
+					<div id="highest" style="width: 20px; height: 20px; background: #7833FD"></div>
+					<span id="highestText">> 6000 Enrolled</span>
+				</div>
 			     <script>
 			       //basic map config with custom fills, mercator projection
 					var basic = new Datamap({
 						element: document.getElementById("basic"),
 						fills: {
 							defaultFill: "#dddddd",
-							certvlow: "#87CEFA",
-							certlow: "#6495ED",
-							certmedium: "#4169E1",
-							certhigh: "#0000FF",
-							certvhigh: "#0000CD",
-							gradevlow: "#FFFF00",
-							gradelow: "#FFCC00",
-							grademedium: "#FF9900",
-							gradehigh: "#FF6600",
-							gradevhigh: "#FF3300",
+							enrolledvlow: "#E8DDFF",
+							enrolledlow: "#C5A7FF",
+							enrolledmedium: "#AB7FFF",
+							enrolledhigh: "#935BFF",
+							enrolledvhigh: "#7833FD",
+							certvlow: "#D9FFEC",
+							certlow: "#9EFFCE",
+							certmedium: "#71FFB7",
+							certhigh: "#49FFA2",
+							certvhigh: "#1DFD8B",
+							gradevlow: "#FFFCD9",
+							gradelow: "#FFF79E",
+							grademedium: "#FFF371",
+							gradehigh: "#FFF049",
+							gradevhigh: "#FFEC1D",
 							mostlyMale: "#0B0B61",
 							somewhatMale: "#3104B4",
 							fiftyfifty: "#4000FF",
 							somewhatFemale: "#8000FF",
-							mostlyFemale: "#BF00FF"
+							mostlyFemale: "#BF00FF",
+							eduvlow: "#FFE2D9",
+							edulow: "#FFB59E",
+							edumedium: "#FF9371",
+							eduhigh: "#FF7449",
+							eduvhigh: "#FF541D"
 						},
 						data: {
 
@@ -636,11 +685,11 @@
 					                        '<br /> have a m:f ratio of ' + malePercent + ':' + femalePercent, '<br />',
 											' out of ' + data.totalPeople + ' students', '<br />',
 					                        '</strong></div>'].join('');
-									} else if (dimensionToMap == 'hdi') {
-										var hdi = data.hdi;
+									} else if (dimensionToMap == 'education') {
+										var education = data.education;
 										return ['<div class="hoverinfo"><strong>',
-					                        'HDI in country ' + geo.properties.name + ': ',
-											hdi, ' with ' + data.totalPeople + ' students',
+					                        'Education Index in country ' + geo.properties.name + ': ',
+											education, ' with ' + data.totalPeople + ' students',
 					                        '</strong></div>'].join('');
 									}
 								}
@@ -659,73 +708,146 @@
 					function updateLegend() {
 						switch (dimensionToMap) {
 							case 'enrolled': {
-
+								var lowest = document.getElementById('lowest');
+								lowest.style.background = "#E8DDFF";
+								var lowestText = document.getElementById('lowestText');
+								lowestText.innerHTML = "< 1000 Enrolled";
+								var low = document.getElementById('low');
+								low.style.background = "#C5A7FF";
+								var lowText = document.getElementById('lowText');
+								lowText.innerHTML = "1000-2000 Enrolled";
+								var middle = document.getElementById('middle');
+								middle.style.background = "#AB7FFF";
+								var middleText = document.getElementById('middleText');
+								middleText.innerHTML = "2000-3000 Enrolled";
+								var high = document.getElementById('high');
+								high.style.background = "#935BFF";
+								var highText = document.getElementById('highText');
+								highText.innerHTML = "3000-6000 Enrolled";
+								var highest = document.getElementById('highest');
+								highest.style.background = "#7833FD";
+								var highestText = document.getElementById('highestText');
+								highestText.innerHTML = "> 6000 Enrolled";
 								break;
 							}
 							case 'population': {
-								// var lowest = document.getElementById('lowest');
-								// lowest.style.background = "black";
-								// var low = document.getElementById('low');
-								// low.style.background = "black";
-								// var middle = document.getElementById('middle');
-								// middle.style.background = "black";
-								// var high = document.getElementById('high');
-								// high.style.background = "black";
-								// var highest = document.getElementById('highest');
-								// highest.style.background = "black";
+								var lowest = document.getElementById('lowest');
+								lowest.style.background = "#E8DDFF";
+								var lowestText = document.getElementById('lowestText');
+								lowestText.innerHTML = "< 10";
+								var low = document.getElementById('low');
+								low.style.background = "#C5A7FF";
+								var lowText = document.getElementById('lowText');
+								lowText.innerHTML = "10-30";
+								var middle = document.getElementById('middle');
+								middle.style.background = "#AB7FFF";
+								var middleText = document.getElementById('middleText');
+								middleText.innerHTML = "30-60";
+								var high = document.getElementById('high');
+								high.style.background = "#935BFF";
+								var highText = document.getElementById('highText');
+								highText.innerHTML = "60-90";
+								var highest = document.getElementById('highest');
+								highest.style.background = "#7833FD";
+								var highestText = document.getElementById('highestText');
+								highestText.innerHTML = "> 90";
 								break;
 							}
 							case 'certified': {
-
+								var lowest = document.getElementById('lowest');
+								lowest.style.background = "#D9FFEC";
+								var lowestText = document.getElementById('lowestText');
+								lowestText.innerHTML = "< 20% Certified";
+								var low = document.getElementById('low');
+								low.style.background = "#9EFFCE";
+								var lowText = document.getElementById('lowText');
+								lowText.innerHTML = "20-40% Certified";
+								var middle = document.getElementById('middle');
+								middle.style.background = "#71FFB7";
+								var middleText = document.getElementById('middleText');
+								middleText.innerHTML = "40-60% Certified";
+								var high = document.getElementById('high');
+								high.style.background = "#49FFA2";
+								var highText = document.getElementById('highText');
+								highText.innerHTML = "60-80% Certified";
+								var highest = document.getElementById('highest');
+								highest.style.background = "#1DFD8B";
+								var highestText = document.getElementById('highestText');
+								highestText.innerHTML = "> 80% Certified";
 								break;
 							}
 							case 'grade': {
 								var lowest = document.getElementById('lowest');
-								lowest.style.background = "#FFFF00";
+								lowest.style.background = "#FFFCD9";
 								var lowestText = document.getElementById('lowestText');
-								lowestText.innerHTML = "Lowest Grade";
+								lowestText.innerHTML = "< 20% Grade Average";
 								var low = document.getElementById('low');
-								low.style.background = "#FFCC00";
+								low.style.background = "#FFF79E";
 								var lowText = document.getElementById('lowText');
-								lowText.innerHTML = "Low Grade";
+								lowText.innerHTML = "20-40% Grade Average";
 								var middle = document.getElementById('middle');
-								middle.style.background = "#FF9900";
+								middle.style.background = "#FFF371";
 								var middleText = document.getElementById('middleText');
-								middleText.innerHTML = "Middle Grade";
+								middleText.innerHTML = "40-60% Grade Average";
 								var high = document.getElementById('high');
-								high.style.background = "#FF6600";
+								high.style.background = "#FFF049";
 								var highText = document.getElementById('highText');
-								highText.innerHTML = "High Grade";
+								highText.innerHTML = "60-80% Grade Average";
 								var highest = document.getElementById('highest');
-								highest.style.background = "#FF3300";
+								highest.style.background = "#FFEC1D";
 								var highestText = document.getElementById('highestText');
-								highestText.innerHTML = "Highest Grade";
+								highestText.innerHTML = "> 80% Grade Average";
 								break;
 							}
 							case 'gender': {
-
+								var lowest = document.getElementById('lowest');
+								lowest.style.background = "#FFE2D9";
+								var lowestText = document.getElementById('lowestText');
+								lowestText.innerHTML = "> 70% Female";
+								var low = document.getElementById('low');
+								low.style.background = "#FFB59E";
+								var lowText = document.getElementById('lowText');
+								lowText.innerHTML = "55-70% Female";
+								var middle = document.getElementById('middle');
+								middle.style.background = "#FF9371";
+								var middleText = document.getElementById('middleText');
+								middleText.innerHTML = "45-55% Female";
+								var high = document.getElementById('high');
+								high.style.background = "#FF7449";
+								var highText = document.getElementById('highText');
+								highText.innerHTML = ".55%-70% Male";
+								var highest = document.getElementById('highest');
+								highest.style.background = "#FF541D";
+								var highestText = document.getElementById('highestText');
+								highestText.innerHTML = "> 70% Male";
 								break;
 							}
-							case 'hdi': {
-
+							case 'education': {
+								var lowest = document.getElementById('lowest');
+								lowest.style.background = "#FFE2D9";
+								var lowestText = document.getElementById('lowestText');
+								lowestText.innerHTML = "< .6 Education Index";
+								var low = document.getElementById('low');
+								low.style.background = "#FFB59E";
+								var lowText = document.getElementById('lowText');
+								lowText.innerHTML = ".6-.7 Education Index";
+								var middle = document.getElementById('middle');
+								middle.style.background = "#FF9371";
+								var middleText = document.getElementById('middleText');
+								middleText.innerHTML = ".7-.8 Education Index";
+								var high = document.getElementById('high');
+								high.style.background = "#FF7449";
+								var highText = document.getElementById('highText');
+								highText.innerHTML = ".8-.9 Education Index";
+								var highest = document.getElementById('highest');
+								highest.style.background = "#FF541D";
+								var highestText = document.getElementById('highestText');
+								highestText.innerHTML = "> .9 Education Index";
 								break;
 							}
 						}
 					}
 			     </script>
-
-				<div id="legend">
-					<div id="lowest" style="width: 20px; height: 20px; background: blue"></div>
-					<span id="lowestText">Lowest</span>
-					<div id="low" style="width: 20px; height: 20px; background: red"></div>
-					<span id="lowText">Low</span>
-					<div id="middle" style="width: 20px; height: 20px; background: green"></div>
-					<span id="middleText">Middle</span>
-					<div id="high" style="width: 20px; height: 20px; background: yellow"></div>
-					<span id="highText">High</span>
-					<div id="highest" style="width: 20px; height: 20px; background: orange"></div>
-					<span id="highestText">Highest</span>
-				</div>
 			</div>
 			<script>
 				//all shamelessly stolen from http://bl.ocks.org/syntagmatic/7e7ee384f7cf515f6602
