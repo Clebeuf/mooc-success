@@ -593,7 +593,7 @@
 						},
 						geographyConfig: {
 							popupTemplate: function(geo, data) {
-								if (data == null) {
+								if (data == null || data.totalPeople < 1) {
 									return ['<div class="hoverinfo"><strong>',
 									 	geo.properties.name,
 										'</strong></div>'].join('');
