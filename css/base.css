@@ -1,4 +1,4 @@
- 
+
 .body {
   background-color: #F8F8F8 !important;
 
@@ -24,7 +24,7 @@
 }
 
 .filter-by-course{
-  margin-left: 10px; 
+  margin-left: 10px;
 }
 .filters {
   padding: 10px;
@@ -59,7 +59,7 @@
 .course-well{
   max-height: 80px;
   width: 100%;
-  overflow: scroll; 
+  overflow: scroll;
 }
 
 .well{
@@ -80,4 +80,13 @@ ul {
   background-color: #FFFFFF !important;
   border: 1px solid #CCCCCC !important;
   border-radius: 3px;
+}
+
+#lowest, #low, #middle, #high, #highest {
+    float: left;
+}
+
+#lowestText, #lowText, #middleText, #highText, #highestText {
+    margin-left: 20px;
+    clear: both;
 }
